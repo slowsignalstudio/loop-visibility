@@ -29,3 +29,16 @@ drop policy if exists "traces_read_all" on traces;
 create policy "traces_read_all"
   on traces for select
   using (true);
+
+-- Realtime: add the table to the supabase_realtime publication so the viewer can stream
+-- inserts. Guarded so re-running is a no-op. (If the table already existed before this
+-- line was added, run just this block in the SQL editor to light realtime up.)
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'traces'
+  ) then
+    alter publication supabase_realtime add table traces;
+  end if;
+end $$;

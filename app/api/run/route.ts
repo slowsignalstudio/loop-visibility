@@ -24,13 +24,24 @@ After verification, give a short final recommendation citing only the changes th
 const TASK =
   "Find subscriptions whose price changed this quarter (April–June 2026), compute the total monthly impact, and draft a recommendation.";
 
-export async function POST() {
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export async function POST(request: Request) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json({ error: "Missing ANTHROPIC_API_KEY" }, { status: 500 });
   }
 
+  // The client generates the run_id up front so it can subscribe/poll before any row is
+  // written, then hands it here. Fall back to a fresh uuid if none/invalid was provided.
+  let provided: unknown = null;
+  try {
+    provided = ((await request.json()) as { run_id?: unknown } | null)?.run_id ?? null;
+  } catch {
+    /* no body */
+  }
+  const run_id = typeof provided === "string" && UUID_RE.test(provided) ? provided : randomUUID();
+
   const client = new Anthropic();
-  const run_id = randomUUID();
   const messages: Anthropic.MessageParam[] = [{ role: "user", content: TASK }];
   let step_index = 0;
   let stop_reason = "";

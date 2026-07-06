@@ -1,62 +1,116 @@
-import { createServiceClient } from "@/lib/supabaseClient";
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createBrowserClient } from "@/lib/supabaseClient";
 import type { Trace } from "@/lib/trace";
 
-export const dynamic = "force-dynamic";
+// The viewer reads ONLY from trace rows. It subscribes to the `traces` table via Supabase
+// realtime, filtered by run_id, and appends each row as formatted JSON in a monospace
+// column. A 1-second poll runs alongside as the fallback (and initial load) so the viewer
+// works even before realtime's publication is enabled. No styling yet (Day 3).
 
-// Unstyled on purpose: per the working rules, no styling until Day 3. This renders
-// the most recent trace rows so we can confirm the write path end-to-end first.
-export default async function Home() {
-  let rows: Trace[] = [];
-  let err: string | null = null;
+export default function Home() {
+  const [rows, setRows] = useState<Trace[]>([]);
+  const [runId, setRunId] = useState<string | null>(null);
+  const [running, setRunning] = useState(false);
+  const [transport, setTransport] = useState<"idle" | "polling" | "realtime">("idle");
+  const seen = useRef<Set<string>>(new Set());
 
-  try {
-    const supabase = createServiceClient();
-    const { data, error } = await supabase
+  const addRows = useCallback((incoming: Trace[]) => {
+    setRows((prev) => {
+      const next = prev.slice();
+      for (const r of incoming) {
+        if (seen.current.has(r.id)) continue;
+        seen.current.add(r.id);
+        next.push(r);
+      }
+      next.sort((a, b) => a.step_index - b.step_index);
+      return next;
+    });
+  }, []);
+
+  // Realtime subscription (+ initial load), scoped to the active run_id.
+  useEffect(() => {
+    if (!runId) return;
+    const supabase = createBrowserClient();
+    const channel = supabase
+      .channel(`traces-${runId}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "traces", filter: `run_id=eq.${runId}` },
+        (payload) => addRows([payload.new as Trace]),
+      )
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") setTransport((t) => (t === "polling" ? t : "realtime"));
+      });
+
+    supabase
       .from("traces")
       .select()
-      .order("created_at", { ascending: false })
-      .limit(50);
-    if (error) throw error;
-    rows = (data ?? []) as Trace[];
-  } catch (e) {
-    err = e instanceof Error ? e.message : String(e);
-  }
+      .eq("run_id", runId)
+      .order("step_index")
+      .then(({ data }) => data && addRows(data as Trace[]));
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [runId, addRows]);
+
+  // Polling fallback — every second while a run is in flight.
+  useEffect(() => {
+    if (!runId || !running) return;
+    const supabase = createBrowserClient();
+    const poll = async () => {
+      const { data } = await supabase.from("traces").select().eq("run_id", runId).order("step_index");
+      setTransport((t) => (t === "realtime" ? t : "polling"));
+      if (data) addRows(data as Trace[]);
+    };
+    poll();
+    const interval = setInterval(poll, 1000);
+    return () => clearInterval(interval);
+  }, [runId, running, addRows]);
+
+  const start = useCallback(async () => {
+    const id = crypto.randomUUID();
+    seen.current = new Set();
+    setRows([]);
+    setRunId(id);
+    setRunning(true);
+    try {
+      await fetch("/api/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ run_id: id }),
+      });
+    } finally {
+      // Final catch-up read so the last rows land even if realtime isn't enabled.
+      const supabase = createBrowserClient();
+      const { data } = await supabase.from("traces").select().eq("run_id", id).order("step_index");
+      if (data) addRows(data as Trace[]);
+      setRunning(false);
+    }
+  }, [addRows]);
 
   return (
     <main>
       <h1>Loop Visibility</h1>
-      {err ? (
-        <p>Could not load traces: {err}</p>
-      ) : rows.length === 0 ? (
-        <p>No traces yet. Every agent hop should call writeTrace().</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>run_id</th>
-              <th>step</th>
-              <th>phase</th>
-              <th>tool_name</th>
-              <th>model_confidence</th>
-              <th>verification</th>
-              <th>created_at</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id}>
-                <td>{r.run_id}</td>
-                <td>{r.step_index}</td>
-                <td>{r.phase}</td>
-                <td>{r.tool_name ?? ""}</td>
-                <td>{r.model_confidence ?? ""}</td>
-                <td>{r.verification ? JSON.stringify(r.verification) : ""}</td>
-                <td>{r.created_at}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <button onClick={start} disabled={running}>
+        {running ? "Running…" : "Run money check-in"}
+      </button>
+      <p>
+        run_id: {runId ?? "—"} · transport: {transport} · rows: {rows.length}
+      </p>
+      <div>
+        {rows.length === 0 ? (
+          <p>No trace rows yet. Start a run to watch hops arrive.</p>
+        ) : (
+          rows.map((r) => (
+            <pre key={r.id} style={{ fontFamily: "monospace", whiteSpace: "pre-wrap" }}>
+              {JSON.stringify(r, null, 2)}
+            </pre>
+          ))
+        )}
+      </div>
     </main>
   );
 }
