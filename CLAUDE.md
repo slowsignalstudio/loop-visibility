@@ -85,3 +85,13 @@ ordered by `hop_index`. Sub-agent hops reference their caller via `parent_id`.
 2. **No styling until Day 3.** Tailwind is wired up but stays unused; keep components plain
    and structural until the trace/write path is proven end-to-end. Don't add visual polish
    before then.
+
+## Model policy
+
+Anthropic API calls run through the [Anthropic SDK](https://github.com/anthropics/anthropic-sdk-typescript) (`@anthropic-ai/sdk`), keyed by `ANTHROPIC_API_KEY` (see `.env.example`). Choose the model by the job:
+
+- **Sonnet (`claude-sonnet-5`) runs the agent loop** — the default workhorse for generation, tool use, and anything user-facing. Start here.
+- **Haiku (`claude-haiku-4-5`) handles cheap checks** — classification, routing, boolean/short judgments, and other high-volume, low-stakes calls where latency and cost matter more than nuance.
+- **Opus (`claude-opus-4-8`) only when output quality visibly matters** — upgrade a specific call to Opus when a person would notice the difference (final-draft prose, hard reasoning, gnarly debugging). It's a deliberate per-call upgrade, not a default.
+
+The streaming demo at `app/api/stream/route.ts` uses Sonnet, per the loop default.
