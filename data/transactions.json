@@ -84,6 +84,13 @@
     "category": "entertainment"
   },
   {
+    "id": "txn_0025",
+    "date": "2026-04-03",
+    "merchant": "AWS",
+    "amount": 22.14,
+    "category": "subscription"
+  },
+  {
     "id": "txn_0155",
     "date": "2026-04-03",
     "merchant": "Ticketmaster",
@@ -469,13 +476,6 @@
     "category": "groceries"
   },
   {
-    "id": "txn_0025",
-    "date": "2026-04-20",
-    "merchant": "Pacific Gas & Electric",
-    "amount": 96.14,
-    "category": "utility"
-  },
-  {
     "id": "txn_0094",
     "date": "2026-04-20",
     "merchant": "Sweetgreen",
@@ -775,6 +775,13 @@
     "merchant": "Amazon",
     "amount": 158.91,
     "category": "shopping"
+  },
+  {
+    "id": "txn_0026",
+    "date": "2026-05-03",
+    "merchant": "AWS",
+    "amount": 41.88,
+    "category": "subscription"
   },
   {
     "id": "txn_0055",
@@ -1225,13 +1232,6 @@
     "category": "shopping"
   },
   {
-    "id": "txn_0026",
-    "date": "2026-05-20",
-    "merchant": "Pacific Gas & Electric",
-    "amount": 118.77,
-    "category": "utility"
-  },
-  {
     "id": "txn_0215",
     "date": "2026-05-20",
     "merchant": "Trader Joe's",
@@ -1433,6 +1433,13 @@
     "merchant": "Uniqlo",
     "amount": 220.84,
     "category": "shopping"
+  },
+  {
+    "id": "txn_0027",
+    "date": "2026-06-03",
+    "merchant": "AWS",
+    "amount": 68.02,
+    "category": "subscription"
   },
   {
     "id": "txn_0066",
@@ -1909,13 +1916,6 @@
     "merchant": "Shell",
     "amount": 6.46,
     "category": "transport"
-  },
-  {
-    "id": "txn_0027",
-    "date": "2026-06-20",
-    "merchant": "Pacific Gas & Electric",
-    "amount": 151.32,
-    "category": "utility"
   },
   {
     "id": "txn_0041",

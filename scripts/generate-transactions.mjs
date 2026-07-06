@@ -49,11 +49,12 @@ for (const s of subs) {
   MONTHS.forEach((ym, i) => add(iso(ym, s.day), s.merchant, s.amounts[i], "subscription"));
 }
 
-// --- The TRAP: looks recurring (same merchant, monthly) but the charge is usage-based, so
-// every month differs and it trends up. A naive delta flags a "price increase"; verify must
-// reject it because there is no stable base price to have "changed". ---
-const trap = { merchant: "Pacific Gas & Electric", day: 20, amounts: [96.14, 118.77, 151.32] };
-MONTHS.forEach((ym, i) => add(iso(ym, trap.day), trap.merchant, trap.amounts[i], "utility"));
+// --- The TRAP: a real recurring SUBSCRIPTION (so a subscriptions-only gather includes it),
+// but usage-metered — the charge differs every month and trends up. A naive delta flags a
+// "price increase"; verify must reject it because there is no stable base price that
+// "changed". This is the false positive the demo turns on. ---
+const trap = { merchant: "AWS", day: 3, amounts: [22.14, 41.88, 68.02] };
+MONTHS.forEach((ym, i) => add(iso(ym, trap.day), trap.merchant, trap.amounts[i], "subscription"));
 
 // --- Noise: a few hundred one-off, non-recurring transactions ---
 const oneOff = {

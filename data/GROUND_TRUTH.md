@@ -14,6 +14,7 @@ node scripts/generate-transactions.mjs
 
 Netflix, Spotify, The New York Times, iCloud+, YouTube Premium, GitHub, Notion,
 Planet Fitness — each billed once per month at a stable amount, except the three below.
+A ninth recurring subscription, **AWS**, is the trap (see below).
 
 ## Planted price increases (the true positives — 3)
 
@@ -29,11 +30,13 @@ The agent should find exactly these, and `verify_findings` should PASS all three
 
 ## The trap (the false positive — 1)
 
-**Pacific Gas & Electric** — charged `96.14 → 118.77 → 151.32` across the three months.
-It looks like a recurring merchant and it trends up, so `analyze_recurring` may flag it as a
-price increase. It is **usage-based**: every month is a different amount, with no stable base
-price that "changed." `verify_findings` must **FAIL** this claim — that correction is the
+**AWS** — a real recurring subscription (`category: "subscription"`, so a subscriptions-only
+gather **includes** it), charged `22.14 → 41.88 → 68.02` across the three months. It trends
+up, so `analyze_recurring` flags it as a price increase alongside the three real ones. But it
+is **usage-metered**: every month is a different amount, with no stable base price that
+"changed." `verify_findings` must **FAIL** this claim — the agent over-counts in the act
+phase, then the verify step corrects it back to the true +$15.50/mo. That correction is the
 moment the demo turns on.
 
-Everything else (≈272 rows) is one-off, non-recurring noise (groceries, dining, transport,
+Everything else (≈270 rows) is one-off, non-recurring noise (groceries, dining, transport,
 shopping, coffee, entertainment) and should not be flagged.
