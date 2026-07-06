@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Loop Visibility
 
-## Getting Started
+A viewer for agent execution traces. Every hop an agent takes writes a trace row to
+Supabase before anything renders; the viewer reads those rows and reconstructs the loop
+so you can see, step by step, what the agent actually did.
 
-First, run the development server:
+Scaffolded with `create-next-app` (Next.js 16, App Router, Tailwind v4) and layered with a
+Supabase trace store.
+
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # fill in your Supabase URL + keys
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Apply the schema to your Supabase project (SQL editor, or the Supabase CLI):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+supabase db reset            # applies supabase/migrations/*.sql
+# or paste supabase/migrations/0001_traces.sql into the SQL editor
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Run / build / test
 
-## Learn More
+```bash
+npm run dev        # local dev server at http://localhost:3000
+npm run build      # production build
+npm run start      # serve the production build
+npm run typecheck  # tsc --noEmit
+npm run lint       # eslint
+npm run test       # vitest run
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Architecture
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `app/` — Next.js App Router. `page.tsx` is the (currently unstyled) trace viewer.
+- `lib/supabaseClient.ts` — `createBrowserClient()` (anon, read) and `createServiceClient()`
+  (service role, server-only writes).
+- `lib/trace.ts` — `writeTrace()` records one hop; `getRun()` fetches a loop in order.
+- `supabase/migrations/` — the `traces` schema.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [CLAUDE.md](./CLAUDE.md) for the trace schema and working rules.
