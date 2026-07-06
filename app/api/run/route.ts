@@ -80,11 +80,14 @@ export async function POST(request: Request) {
       const { phase, output, verification } = runTool(tu.name, input);
 
       // model_confidence is the model's own hedge, stored verbatim (act phase only).
+      // It is a required tool field; if the model omits it, record the absence visibly
+      // rather than null. Gather and verify rows keep null (reading data / the verdict
+      // lives in the verification column, respectively).
       const model_confidence =
         tu.name === "analyze_recurring"
           ? typeof input.confidence === "string" && input.confidence.trim()
             ? input.confidence
-            : assistantText || null
+            : "no confidence stated"
           : null;
 
       // Trace row written BEFORE the result goes back to the model.

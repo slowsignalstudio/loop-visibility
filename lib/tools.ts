@@ -28,7 +28,7 @@ export const tools: Anthropic.Tool[] = [
     // act
     name: "analyze_recurring",
     description:
-      "Identify recurring merchants, compute quarter-over-quarter price deltas, and draft a recommendation.",
+      "Identify recurring merchants, compute quarter-over-quarter price deltas, and draft a recommendation. For every price-change claim, state your certainty and the reason in one sentence, for example 'High confidence, AWS shows a clean $20 jump sustained across three months' or 'Low confidence, only two data points and the gap may be a refund.' This field is required.",
     input_schema: {
       type: "object",
       properties: {
@@ -50,10 +50,10 @@ export const tools: Anthropic.Tool[] = [
         confidence: {
           type: "string",
           description:
-            "Your confidence or hedge about these findings, in your own words — stored verbatim.",
+            "Your certainty and the reason for each price-change claim, in one sentence. Required. Stored verbatim in model_confidence.",
         },
       },
-      required: ["transactions"],
+      required: ["transactions", "confidence"],
       additionalProperties: false,
     },
   },
