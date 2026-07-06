@@ -34,11 +34,11 @@ export default async function Home() {
           <thead>
             <tr>
               <th>run_id</th>
-              <th>hop</th>
-              <th>agent</th>
-              <th>event</th>
-              <th>status</th>
-              <th>latency_ms</th>
+              <th>step</th>
+              <th>phase</th>
+              <th>tool_name</th>
+              <th>model_confidence</th>
+              <th>verification</th>
               <th>created_at</th>
             </tr>
           </thead>
@@ -46,11 +46,11 @@ export default async function Home() {
             {rows.map((r) => (
               <tr key={r.id}>
                 <td>{r.run_id}</td>
-                <td>{r.hop_index}</td>
-                <td>{r.agent}</td>
-                <td>{r.event}</td>
-                <td>{r.status}</td>
-                <td>{r.latency_ms ?? ""}</td>
+                <td>{r.step_index}</td>
+                <td>{r.phase}</td>
+                <td>{r.tool_name ?? ""}</td>
+                <td>{r.model_confidence ?? ""}</td>
+                <td>{r.verification ? JSON.stringify(r.verification) : ""}</td>
                 <td>{r.created_at}</td>
               </tr>
             ))}

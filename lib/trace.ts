@@ -1,41 +1,36 @@
 import { createServiceClient } from "./supabaseClient";
 
-/** A single agent hop within a run/loop. Mirrors the `public.traces` table. */
+/** One hop in a run. Mirrors the `traces` table. Evidence (tool_input/tool_output)
+ *  sits next to the verdict (model_confidence/verification). */
 export type Trace = {
   id: string;
   run_id: string;
-  parent_id: string | null;
-  hop_index: number;
-  agent: string;
-  event: string;
-  status: "ok" | "error" | "pending";
-  input: unknown;
-  output: unknown;
-  error: string | null;
-  latency_ms: number | null;
-  metadata: Record<string, unknown>;
+  step_index: number;
+  phase: string;
+  tool_name: string | null;
+  tool_input: unknown;
+  tool_output: unknown;
+  model_confidence: string | null;
+  verification: unknown;
   created_at: string;
 };
 
 /** Fields a caller supplies when recording a hop. The DB fills in id/created_at. */
 export type TraceInput = {
   run_id: string;
-  parent_id?: string | null;
-  hop_index: number;
-  agent: string;
-  event?: string;
-  status?: Trace["status"];
-  input?: unknown;
-  output?: unknown;
-  error?: string | null;
-  latency_ms?: number | null;
-  metadata?: Record<string, unknown>;
+  step_index: number;
+  phase: string;
+  tool_name?: string | null;
+  tool_input?: unknown;
+  tool_output?: unknown;
+  model_confidence?: string | null;
+  verification?: unknown;
 };
 
 /**
- * Persist one agent hop. Working rule: EVERY agent hop calls writeTrace BEFORE
- * anything is rendered — the trace row is the source of truth, the viewer only
- * reflects it. Throws on failure so a hop can never silently go untraced.
+ * Persist one hop. Working rule: EVERY hop calls writeTrace BEFORE anything is
+ * rendered, and records its evidence next to its verdict — the viewer can only show
+ * what this row preserves. Throws on failure so a hop can never silently go untraced.
  */
 export async function writeTrace(hop: TraceInput): Promise<Trace> {
   const supabase = createServiceClient();
@@ -43,16 +38,13 @@ export async function writeTrace(hop: TraceInput): Promise<Trace> {
     .from("traces")
     .insert({
       run_id: hop.run_id,
-      parent_id: hop.parent_id ?? null,
-      hop_index: hop.hop_index,
-      agent: hop.agent,
-      event: hop.event ?? "step",
-      status: hop.status ?? "ok",
-      input: hop.input ?? null,
-      output: hop.output ?? null,
-      error: hop.error ?? null,
-      latency_ms: hop.latency_ms ?? null,
-      metadata: hop.metadata ?? {},
+      step_index: hop.step_index,
+      phase: hop.phase,
+      tool_name: hop.tool_name ?? null,
+      tool_input: hop.tool_input ?? null,
+      tool_output: hop.tool_output ?? null,
+      model_confidence: hop.model_confidence ?? null,
+      verification: hop.verification ?? null,
     })
     .select()
     .single();
@@ -63,14 +55,14 @@ export async function writeTrace(hop: TraceInput): Promise<Trace> {
   return data as Trace;
 }
 
-/** Fetch all hops for a run, ordered as the loop executed. */
+/** Fetch all hops for a run, ordered as the run executed. */
 export async function getRun(runId: string): Promise<Trace[]> {
   const supabase = createServiceClient();
   const { data, error } = await supabase
     .from("traces")
     .select()
     .eq("run_id", runId)
-    .order("hop_index", { ascending: true });
+    .order("step_index", { ascending: true });
 
   if (error) {
     throw new Error(`getRun failed: ${error.message}`);

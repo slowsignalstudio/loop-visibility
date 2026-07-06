@@ -57,24 +57,23 @@ Dev server: `npm run dev` → http://localhost:3000.
 
 ## Trace schema
 
-One row per agent hop. A **run** is one full loop; hops in a run share `run_id` and are
-ordered by `hop_index`. Sub-agent hops reference their caller via `parent_id`.
+One row per hop. A **run** is one full loop; hops in a run share `run_id` and are ordered
+by `step_index`. The viewer can only ever show what this table preserves, so every hop
+stores its **evidence** (`tool_input` / `tool_output`) next to its **verdict**
+(`model_confidence` / `verification`) from the first run.
 
-| column       | type          | notes                                                        |
-|--------------|---------------|--------------------------------------------------------------|
-| `id`         | uuid (pk)     | `gen_random_uuid()`                                         |
-| `run_id`     | uuid          | groups all hops of one loop                                  |
-| `parent_id`  | uuid, null    | FK → `traces.id`; set for nested/sub-agent hops             |
-| `hop_index`  | integer       | ordinal of the hop within the run                            |
-| `agent`      | text          | which agent/actor took the hop                               |
-| `event`      | text          | `llm_call` \| `tool_call` \| `decision` \| `handoff` \| `step` |
-| `status`     | text          | `ok` \| `error` \| `pending`                                 |
-| `input`      | jsonb, null   | hop input payload                                            |
-| `output`     | jsonb, null   | hop output payload                                           |
-| `error`      | text, null    | error message when `status = 'error'`                        |
-| `latency_ms` | integer, null | hop duration                                                 |
-| `metadata`   | jsonb         | free-form; defaults to `{}`                                  |
-| `created_at` | timestamptz   | `now()`                                                      |
+| column             | type          | notes                                               |
+|--------------------|---------------|-----------------------------------------------------|
+| `id`               | uuid (pk)     | `gen_random_uuid()`                                 |
+| `run_id`           | uuid          | groups all hops of one run                          |
+| `step_index`       | int           | ordinal of the hop within the run                   |
+| `phase`            | text          | what the hop was doing (e.g. plan / act / verify)   |
+| `tool_name`        | text, null    | tool invoked this hop, if any                       |
+| `tool_input`       | jsonb, null   | **evidence** — what went into the tool              |
+| `tool_output`      | jsonb, null   | **evidence** — what the tool returned               |
+| `model_confidence` | text, null    | **verdict** — the model's confidence in this hop    |
+| `verification`     | jsonb, null   | **verdict** — how/whether the hop was checked       |
+| `created_at`       | timestamptz   | `now()`                                             |
 
 ## Working rules
 
