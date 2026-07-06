@@ -1,0 +1,2102 @@
+[
+  {
+    "id": "txn_0010",
+    "date": "2026-04-01",
+    "merchant": "iCloud+",
+    "amount": 2.99,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0053",
+    "date": "2026-04-01",
+    "merchant": "Uniqlo",
+    "amount": 185.98,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0067",
+    "date": "2026-04-01",
+    "merchant": "Clipper Card",
+    "amount": 26.81,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0088",
+    "date": "2026-04-01",
+    "merchant": "Uber",
+    "amount": 10.78,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0131",
+    "date": "2026-04-01",
+    "merchant": "Uniqlo",
+    "amount": 135.8,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0274",
+    "date": "2026-04-01",
+    "merchant": "Starbucks",
+    "amount": 10.47,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0016",
+    "date": "2026-04-02",
+    "merchant": "GitHub",
+    "amount": 4,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0050",
+    "date": "2026-04-02",
+    "merchant": "Starbucks",
+    "amount": 6.22,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0090",
+    "date": "2026-04-02",
+    "merchant": "Safeway",
+    "amount": 132.99,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0171",
+    "date": "2026-04-02",
+    "merchant": "Starbucks",
+    "amount": 11.18,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0210",
+    "date": "2026-04-02",
+    "merchant": "Ticketmaster",
+    "amount": 48.99,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0226",
+    "date": "2026-04-02",
+    "merchant": "Ticketmaster",
+    "amount": 111.05,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0155",
+    "date": "2026-04-03",
+    "merchant": "Ticketmaster",
+    "amount": 32.65,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0001",
+    "date": "2026-04-04",
+    "merchant": "Netflix",
+    "amount": 15.49,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0152",
+    "date": "2026-04-04",
+    "merchant": "Lyft",
+    "amount": 21.41,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0269",
+    "date": "2026-04-04",
+    "merchant": "Blue Bottle",
+    "amount": 32.3,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0178",
+    "date": "2026-04-05",
+    "merchant": "Target",
+    "amount": 211.34,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0196",
+    "date": "2026-04-05",
+    "merchant": "Philz Coffee",
+    "amount": 4.12,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0070",
+    "date": "2026-04-06",
+    "merchant": "AMC Theatres",
+    "amount": 87.05,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0213",
+    "date": "2026-04-06",
+    "merchant": "Uber",
+    "amount": 45.51,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0214",
+    "date": "2026-04-06",
+    "merchant": "Peet's",
+    "amount": 12.48,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0273",
+    "date": "2026-04-06",
+    "merchant": "Starbucks",
+    "amount": 10.51,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0045",
+    "date": "2026-04-07",
+    "merchant": "Steam",
+    "amount": 26.99,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0093",
+    "date": "2026-04-07",
+    "merchant": "REI",
+    "amount": 36.58,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0110",
+    "date": "2026-04-07",
+    "merchant": "Starbucks",
+    "amount": 11.8,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0071",
+    "date": "2026-04-08",
+    "merchant": "Clipper Card",
+    "amount": 9.13,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0138",
+    "date": "2026-04-08",
+    "merchant": "Starbucks",
+    "amount": 10.6,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0004",
+    "date": "2026-04-09",
+    "merchant": "Spotify",
+    "amount": 9.99,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0177",
+    "date": "2026-04-09",
+    "merchant": "Safeway",
+    "amount": 164.42,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0181",
+    "date": "2026-04-09",
+    "merchant": "Chevron",
+    "amount": 13.58,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0218",
+    "date": "2026-04-09",
+    "merchant": "Best Buy",
+    "amount": 190.45,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0297",
+    "date": "2026-04-10",
+    "merchant": "Steam",
+    "amount": 78.02,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0019",
+    "date": "2026-04-12",
+    "merchant": "Notion",
+    "amount": 10,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0176",
+    "date": "2026-04-12",
+    "merchant": "Best Buy",
+    "amount": 65.75,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0285",
+    "date": "2026-04-12",
+    "merchant": "Philz Coffee",
+    "amount": 8.65,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0290",
+    "date": "2026-04-13",
+    "merchant": "Starbucks",
+    "amount": 4.59,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0047",
+    "date": "2026-04-14",
+    "merchant": "Safeway",
+    "amount": 148.47,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0072",
+    "date": "2026-04-14",
+    "merchant": "Pizzeria Delfina",
+    "amount": 49.45,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0111",
+    "date": "2026-04-14",
+    "merchant": "Lyft",
+    "amount": 27.52,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0166",
+    "date": "2026-04-14",
+    "merchant": "Peet's",
+    "amount": 4.21,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0168",
+    "date": "2026-04-14",
+    "merchant": "Blue Bottle",
+    "amount": 57.17,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0193",
+    "date": "2026-04-14",
+    "merchant": "Chevron",
+    "amount": 15.65,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0204",
+    "date": "2026-04-14",
+    "merchant": "Ticketmaster",
+    "amount": 27.67,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0296",
+    "date": "2026-04-14",
+    "merchant": "Ticketmaster",
+    "amount": 52.08,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0007",
+    "date": "2026-04-15",
+    "merchant": "The New York Times",
+    "amount": 17,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0125",
+    "date": "2026-04-15",
+    "merchant": "Sweetgreen",
+    "amount": 20.11,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0148",
+    "date": "2026-04-15",
+    "merchant": "Trader Joe's",
+    "amount": 24.01,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0300",
+    "date": "2026-04-15",
+    "merchant": "Steam",
+    "amount": 37.23,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0036",
+    "date": "2026-04-16",
+    "merchant": "Uniqlo",
+    "amount": 87.85,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0118",
+    "date": "2026-04-16",
+    "merchant": "Peet's",
+    "amount": 6.45,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0247",
+    "date": "2026-04-16",
+    "merchant": "Chipotle",
+    "amount": 54.15,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0022",
+    "date": "2026-04-17",
+    "merchant": "Planet Fitness",
+    "amount": 24.99,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0057",
+    "date": "2026-04-17",
+    "merchant": "Ticketmaster",
+    "amount": 82.66,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0077",
+    "date": "2026-04-17",
+    "merchant": "Shell",
+    "amount": 41.48,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0165",
+    "date": "2026-04-17",
+    "merchant": "Ticketmaster",
+    "amount": 87.76,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0281",
+    "date": "2026-04-17",
+    "merchant": "AMC Theatres",
+    "amount": 36.26,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0287",
+    "date": "2026-04-17",
+    "merchant": "Lyft",
+    "amount": 42.41,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0102",
+    "date": "2026-04-18",
+    "merchant": "Shell",
+    "amount": 24.61,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0211",
+    "date": "2026-04-18",
+    "merchant": "Blue Bottle",
+    "amount": 41.95,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0255",
+    "date": "2026-04-18",
+    "merchant": "Chipotle",
+    "amount": 31.37,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0054",
+    "date": "2026-04-19",
+    "merchant": "Steam",
+    "amount": 71.69,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0078",
+    "date": "2026-04-19",
+    "merchant": "Chipotle",
+    "amount": 16.3,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0135",
+    "date": "2026-04-19",
+    "merchant": "Whole Foods",
+    "amount": 168.93,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0141",
+    "date": "2026-04-19",
+    "merchant": "AMC Theatres",
+    "amount": 28.14,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0167",
+    "date": "2026-04-19",
+    "merchant": "Ticketmaster",
+    "amount": 13.15,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0203",
+    "date": "2026-04-19",
+    "merchant": "Chevron",
+    "amount": 3.66,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0257",
+    "date": "2026-04-19",
+    "merchant": "Trader Joe's",
+    "amount": 178.22,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0025",
+    "date": "2026-04-20",
+    "merchant": "Pacific Gas & Electric",
+    "amount": 96.14,
+    "category": "utility"
+  },
+  {
+    "id": "txn_0094",
+    "date": "2026-04-20",
+    "merchant": "Sweetgreen",
+    "amount": 12.04,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0140",
+    "date": "2026-04-20",
+    "merchant": "Local Thai",
+    "amount": 43.46,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0191",
+    "date": "2026-04-20",
+    "merchant": "REI",
+    "amount": 203.94,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0248",
+    "date": "2026-04-20",
+    "merchant": "Clipper Card",
+    "amount": 40.72,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0040",
+    "date": "2026-04-21",
+    "merchant": "Chipotle",
+    "amount": 29.88,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0103",
+    "date": "2026-04-21",
+    "merchant": "Clipper Card",
+    "amount": 16.46,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0154",
+    "date": "2026-04-21",
+    "merchant": "Safeway",
+    "amount": 23.08,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0223",
+    "date": "2026-04-21",
+    "merchant": "Philz Coffee",
+    "amount": 12.33,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0261",
+    "date": "2026-04-21",
+    "merchant": "Clipper Card",
+    "amount": 36.32,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0013",
+    "date": "2026-04-22",
+    "merchant": "YouTube Premium",
+    "amount": 13.99,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0185",
+    "date": "2026-04-22",
+    "merchant": "Lyft",
+    "amount": 35.49,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0239",
+    "date": "2026-04-22",
+    "merchant": "Target",
+    "amount": 141.48,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0283",
+    "date": "2026-04-22",
+    "merchant": "Whole Foods",
+    "amount": 29.54,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0292",
+    "date": "2026-04-22",
+    "merchant": "Steam",
+    "amount": 42.65,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0150",
+    "date": "2026-04-23",
+    "merchant": "Peet's",
+    "amount": 12.5,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0262",
+    "date": "2026-04-23",
+    "merchant": "Safeway",
+    "amount": 139.45,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0032",
+    "date": "2026-04-24",
+    "merchant": "Steam",
+    "amount": 26.31,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0061",
+    "date": "2026-04-24",
+    "merchant": "Ramen Nagi",
+    "amount": 23.13,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0108",
+    "date": "2026-04-24",
+    "merchant": "Best Buy",
+    "amount": 71.92,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0208",
+    "date": "2026-04-24",
+    "merchant": "Whole Foods",
+    "amount": 155.18,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0059",
+    "date": "2026-04-25",
+    "merchant": "Costco",
+    "amount": 187.6,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0060",
+    "date": "2026-04-25",
+    "merchant": "Blue Bottle",
+    "amount": 12.75,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0206",
+    "date": "2026-04-25",
+    "merchant": "Ticketmaster",
+    "amount": 82.81,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0234",
+    "date": "2026-04-25",
+    "merchant": "AMC Theatres",
+    "amount": 74.01,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0243",
+    "date": "2026-04-25",
+    "merchant": "REI",
+    "amount": 41.41,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0074",
+    "date": "2026-04-26",
+    "merchant": "Pizzeria Delfina",
+    "amount": 48.2,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0117",
+    "date": "2026-04-26",
+    "merchant": "Uber",
+    "amount": 32.11,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0253",
+    "date": "2026-04-26",
+    "merchant": "Target",
+    "amount": 84.81,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0295",
+    "date": "2026-04-26",
+    "merchant": "Clipper Card",
+    "amount": 12,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0030",
+    "date": "2026-04-27",
+    "merchant": "Safeway",
+    "amount": 33.37,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0048",
+    "date": "2026-04-27",
+    "merchant": "Whole Foods",
+    "amount": 79.9,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0083",
+    "date": "2026-04-27",
+    "merchant": "Clipper Card",
+    "amount": 9.61,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0278",
+    "date": "2026-04-27",
+    "merchant": "AMC Theatres",
+    "amount": 112,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0159",
+    "date": "2026-04-28",
+    "merchant": "Whole Foods",
+    "amount": 83.37,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0174",
+    "date": "2026-04-28",
+    "merchant": "AMC Theatres",
+    "amount": 115.83,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0225",
+    "date": "2026-04-28",
+    "merchant": "Sweetgreen",
+    "amount": 32.11,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0011",
+    "date": "2026-05-01",
+    "merchant": "iCloud+",
+    "amount": 2.99,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0133",
+    "date": "2026-05-01",
+    "merchant": "Whole Foods",
+    "amount": 112.79,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0276",
+    "date": "2026-05-01",
+    "merchant": "Blue Bottle",
+    "amount": 21.48,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0017",
+    "date": "2026-05-02",
+    "merchant": "GitHub",
+    "amount": 4,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0079",
+    "date": "2026-05-02",
+    "merchant": "Chevron",
+    "amount": 8.92,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0114",
+    "date": "2026-05-02",
+    "merchant": "Uber",
+    "amount": 14.47,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0221",
+    "date": "2026-05-02",
+    "merchant": "Amazon",
+    "amount": 158.91,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0055",
+    "date": "2026-05-03",
+    "merchant": "Steam",
+    "amount": 67.92,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0069",
+    "date": "2026-05-03",
+    "merchant": "Chipotle",
+    "amount": 60.82,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0081",
+    "date": "2026-05-03",
+    "merchant": "Steam",
+    "amount": 106.37,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0098",
+    "date": "2026-05-03",
+    "merchant": "Lyft",
+    "amount": 13.84,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0002",
+    "date": "2026-05-04",
+    "merchant": "Netflix",
+    "amount": 15.49,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0038",
+    "date": "2026-05-04",
+    "merchant": "Peet's",
+    "amount": 6.21,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0288",
+    "date": "2026-05-04",
+    "merchant": "Clipper Card",
+    "amount": 26.64,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0042",
+    "date": "2026-05-05",
+    "merchant": "Best Buy",
+    "amount": 193.54,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0065",
+    "date": "2026-05-05",
+    "merchant": "Ticketmaster",
+    "amount": 28.5,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0202",
+    "date": "2026-05-05",
+    "merchant": "Costco",
+    "amount": 53.72,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0236",
+    "date": "2026-05-05",
+    "merchant": "Local Thai",
+    "amount": 47.3,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0039",
+    "date": "2026-05-06",
+    "merchant": "Costco",
+    "amount": 186.15,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0116",
+    "date": "2026-05-06",
+    "merchant": "Ticketmaster",
+    "amount": 61.73,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0217",
+    "date": "2026-05-06",
+    "merchant": "Starbucks",
+    "amount": 7.29,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0286",
+    "date": "2026-05-06",
+    "merchant": "Uniqlo",
+    "amount": 129.93,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0129",
+    "date": "2026-05-07",
+    "merchant": "Ticketmaster",
+    "amount": 110.17,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0263",
+    "date": "2026-05-07",
+    "merchant": "Blue Bottle",
+    "amount": 14.01,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0046",
+    "date": "2026-05-08",
+    "merchant": "AMC Theatres",
+    "amount": 109.31,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0139",
+    "date": "2026-05-08",
+    "merchant": "Trader Joe's",
+    "amount": 92.14,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0005",
+    "date": "2026-05-09",
+    "merchant": "Spotify",
+    "amount": 9.99,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0091",
+    "date": "2026-05-09",
+    "merchant": "Philz Coffee",
+    "amount": 7.46,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0099",
+    "date": "2026-05-09",
+    "merchant": "Target",
+    "amount": 57.86,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0106",
+    "date": "2026-05-09",
+    "merchant": "Lyft",
+    "amount": 29.94,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0160",
+    "date": "2026-05-09",
+    "merchant": "Uniqlo",
+    "amount": 190.14,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0164",
+    "date": "2026-05-09",
+    "merchant": "Uniqlo",
+    "amount": 142.35,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0241",
+    "date": "2026-05-09",
+    "merchant": "Uber",
+    "amount": 16.56,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0259",
+    "date": "2026-05-09",
+    "merchant": "Steam",
+    "amount": 15.89,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0265",
+    "date": "2026-05-09",
+    "merchant": "Steam",
+    "amount": 41.36,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0268",
+    "date": "2026-05-09",
+    "merchant": "Shell",
+    "amount": 44.94,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0031",
+    "date": "2026-05-10",
+    "merchant": "Whole Foods",
+    "amount": 186.97,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0112",
+    "date": "2026-05-10",
+    "merchant": "Whole Foods",
+    "amount": 173.8,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0186",
+    "date": "2026-05-10",
+    "merchant": "Shell",
+    "amount": 45.97,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0115",
+    "date": "2026-05-11",
+    "merchant": "AMC Theatres",
+    "amount": 46.45,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0189",
+    "date": "2026-05-11",
+    "merchant": "REI",
+    "amount": 110.02,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0205",
+    "date": "2026-05-11",
+    "merchant": "Whole Foods",
+    "amount": 78.51,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0219",
+    "date": "2026-05-11",
+    "merchant": "Costco",
+    "amount": 136.86,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0251",
+    "date": "2026-05-11",
+    "merchant": "Ticketmaster",
+    "amount": 102.17,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0020",
+    "date": "2026-05-12",
+    "merchant": "Notion",
+    "amount": 10,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0028",
+    "date": "2026-05-12",
+    "merchant": "Philz Coffee",
+    "amount": 8.42,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0101",
+    "date": "2026-05-12",
+    "merchant": "Ramen Nagi",
+    "amount": 56.44,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0104",
+    "date": "2026-05-12",
+    "merchant": "Philz Coffee",
+    "amount": 9.45,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0258",
+    "date": "2026-05-12",
+    "merchant": "Peet's",
+    "amount": 7.01,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0008",
+    "date": "2026-05-15",
+    "merchant": "The New York Times",
+    "amount": 17,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0062",
+    "date": "2026-05-15",
+    "merchant": "Best Buy",
+    "amount": 43.55,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0190",
+    "date": "2026-05-15",
+    "merchant": "Ramen Nagi",
+    "amount": 53.28,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0199",
+    "date": "2026-05-15",
+    "merchant": "Ticketmaster",
+    "amount": 118.17,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0238",
+    "date": "2026-05-15",
+    "merchant": "Uniqlo",
+    "amount": 135.8,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0240",
+    "date": "2026-05-15",
+    "merchant": "Steam",
+    "amount": 15.49,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0049",
+    "date": "2026-05-16",
+    "merchant": "Sweetgreen",
+    "amount": 33.41,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0051",
+    "date": "2026-05-16",
+    "merchant": "Trader Joe's",
+    "amount": 129.93,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0058",
+    "date": "2026-05-16",
+    "merchant": "Amazon",
+    "amount": 32.03,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0130",
+    "date": "2026-05-16",
+    "merchant": "Target",
+    "amount": 106.42,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0156",
+    "date": "2026-05-16",
+    "merchant": "Best Buy",
+    "amount": 29.75,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0216",
+    "date": "2026-05-16",
+    "merchant": "Philz Coffee",
+    "amount": 5.11,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0023",
+    "date": "2026-05-17",
+    "merchant": "Planet Fitness",
+    "amount": 24.99,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0144",
+    "date": "2026-05-17",
+    "merchant": "Starbucks",
+    "amount": 10.91,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0184",
+    "date": "2026-05-17",
+    "merchant": "REI",
+    "amount": 27.12,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0209",
+    "date": "2026-05-17",
+    "merchant": "Costco",
+    "amount": 121.02,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0252",
+    "date": "2026-05-17",
+    "merchant": "Safeway",
+    "amount": 39.19,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0120",
+    "date": "2026-05-18",
+    "merchant": "Best Buy",
+    "amount": 222.8,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0192",
+    "date": "2026-05-18",
+    "merchant": "REI",
+    "amount": 156.6,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0095",
+    "date": "2026-05-19",
+    "merchant": "Best Buy",
+    "amount": 93.58,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0282",
+    "date": "2026-05-19",
+    "merchant": "Trader Joe's",
+    "amount": 66.74,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0298",
+    "date": "2026-05-19",
+    "merchant": "Amazon",
+    "amount": 109.42,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0026",
+    "date": "2026-05-20",
+    "merchant": "Pacific Gas & Electric",
+    "amount": 118.77,
+    "category": "utility"
+  },
+  {
+    "id": "txn_0215",
+    "date": "2026-05-20",
+    "merchant": "Trader Joe's",
+    "amount": 178.24,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0291",
+    "date": "2026-05-20",
+    "merchant": "Peet's",
+    "amount": 6.51,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0014",
+    "date": "2026-05-22",
+    "merchant": "YouTube Premium",
+    "amount": 13.99,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0068",
+    "date": "2026-05-22",
+    "merchant": "Whole Foods",
+    "amount": 73.97,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0229",
+    "date": "2026-05-23",
+    "merchant": "Costco",
+    "amount": 123.63,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0107",
+    "date": "2026-05-24",
+    "merchant": "Starbucks",
+    "amount": 7.24,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0275",
+    "date": "2026-05-24",
+    "merchant": "Safeway",
+    "amount": 150.86,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0033",
+    "date": "2026-05-25",
+    "merchant": "Philz Coffee",
+    "amount": 9.3,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0075",
+    "date": "2026-05-25",
+    "merchant": "Costco",
+    "amount": 94.84,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0146",
+    "date": "2026-05-25",
+    "merchant": "Local Thai",
+    "amount": 21.95,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0161",
+    "date": "2026-05-25",
+    "merchant": "Philz Coffee",
+    "amount": 11.25,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0044",
+    "date": "2026-05-26",
+    "merchant": "Steam",
+    "amount": 79.86,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0092",
+    "date": "2026-05-26",
+    "merchant": "Steam",
+    "amount": 84.71,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0245",
+    "date": "2026-05-26",
+    "merchant": "Clipper Card",
+    "amount": 41.2,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0280",
+    "date": "2026-05-26",
+    "merchant": "Philz Coffee",
+    "amount": 7.29,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0143",
+    "date": "2026-05-27",
+    "merchant": "Pizzeria Delfina",
+    "amount": 40.49,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0100",
+    "date": "2026-05-28",
+    "merchant": "Target",
+    "amount": 211.49,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0136",
+    "date": "2026-05-28",
+    "merchant": "Amazon",
+    "amount": 207.84,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0228",
+    "date": "2026-05-28",
+    "merchant": "Peet's",
+    "amount": 4.65,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0233",
+    "date": "2026-05-28",
+    "merchant": "Philz Coffee",
+    "amount": 12.18,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0012",
+    "date": "2026-06-01",
+    "merchant": "iCloud+",
+    "amount": 2.99,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0056",
+    "date": "2026-06-01",
+    "merchant": "AMC Theatres",
+    "amount": 87.73,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0105",
+    "date": "2026-06-01",
+    "merchant": "Peet's",
+    "amount": 4.16,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0195",
+    "date": "2026-06-01",
+    "merchant": "Starbucks",
+    "amount": 13.73,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0279",
+    "date": "2026-06-01",
+    "merchant": "AMC Theatres",
+    "amount": 75.38,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0018",
+    "date": "2026-06-02",
+    "merchant": "GitHub",
+    "amount": 4,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0227",
+    "date": "2026-06-02",
+    "merchant": "Lyft",
+    "amount": 31.93,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0267",
+    "date": "2026-06-02",
+    "merchant": "Philz Coffee",
+    "amount": 7.46,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0294",
+    "date": "2026-06-02",
+    "merchant": "Uniqlo",
+    "amount": 220.84,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0066",
+    "date": "2026-06-03",
+    "merchant": "Trader Joe's",
+    "amount": 122.13,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0124",
+    "date": "2026-06-03",
+    "merchant": "Whole Foods",
+    "amount": 32.26,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0157",
+    "date": "2026-06-03",
+    "merchant": "AMC Theatres",
+    "amount": 97.34,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0003",
+    "date": "2026-06-04",
+    "merchant": "Netflix",
+    "amount": 17.99,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0183",
+    "date": "2026-06-04",
+    "merchant": "AMC Theatres",
+    "amount": 105.46,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0187",
+    "date": "2026-06-04",
+    "merchant": "Philz Coffee",
+    "amount": 11.31,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0231",
+    "date": "2026-06-04",
+    "merchant": "Best Buy",
+    "amount": 20.18,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0250",
+    "date": "2026-06-04",
+    "merchant": "Chipotle",
+    "amount": 23.26,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0293",
+    "date": "2026-06-04",
+    "merchant": "Best Buy",
+    "amount": 23.85,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0113",
+    "date": "2026-06-05",
+    "merchant": "Chipotle",
+    "amount": 22.08,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0119",
+    "date": "2026-06-05",
+    "merchant": "Philz Coffee",
+    "amount": 5.35,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0200",
+    "date": "2026-06-05",
+    "merchant": "Costco",
+    "amount": 59.04,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0272",
+    "date": "2026-06-05",
+    "merchant": "Steam",
+    "amount": 110.59,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0212",
+    "date": "2026-06-06",
+    "merchant": "Starbucks",
+    "amount": 12.75,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0284",
+    "date": "2026-06-06",
+    "merchant": "AMC Theatres",
+    "amount": 24.74,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0197",
+    "date": "2026-06-08",
+    "merchant": "Lyft",
+    "amount": 45.54,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0222",
+    "date": "2026-06-08",
+    "merchant": "Chipotle",
+    "amount": 15.61,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0237",
+    "date": "2026-06-08",
+    "merchant": "AMC Theatres",
+    "amount": 59.98,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0006",
+    "date": "2026-06-09",
+    "merchant": "Spotify",
+    "amount": 9.99,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0122",
+    "date": "2026-06-09",
+    "merchant": "Sweetgreen",
+    "amount": 35.82,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0169",
+    "date": "2026-06-09",
+    "merchant": "Philz Coffee",
+    "amount": 6.45,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0170",
+    "date": "2026-06-09",
+    "merchant": "Uniqlo",
+    "amount": 90.16,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0175",
+    "date": "2026-06-09",
+    "merchant": "AMC Theatres",
+    "amount": 24.22,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0188",
+    "date": "2026-06-09",
+    "merchant": "Sweetgreen",
+    "amount": 37.45,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0249",
+    "date": "2026-06-09",
+    "merchant": "Philz Coffee",
+    "amount": 8.99,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0271",
+    "date": "2026-06-09",
+    "merchant": "Chevron",
+    "amount": 16.25,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0158",
+    "date": "2026-06-10",
+    "merchant": "Clipper Card",
+    "amount": 13.9,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0224",
+    "date": "2026-06-10",
+    "merchant": "Trader Joe's",
+    "amount": 164.25,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0235",
+    "date": "2026-06-10",
+    "merchant": "Whole Foods",
+    "amount": 112.18,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0289",
+    "date": "2026-06-11",
+    "merchant": "Uber",
+    "amount": 22.91,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0021",
+    "date": "2026-06-12",
+    "merchant": "Notion",
+    "amount": 10,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0080",
+    "date": "2026-06-12",
+    "merchant": "Starbucks",
+    "amount": 4.78,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0082",
+    "date": "2026-06-12",
+    "merchant": "Philz Coffee",
+    "amount": 12.75,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0096",
+    "date": "2026-06-12",
+    "merchant": "Trader Joe's",
+    "amount": 115.38,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0126",
+    "date": "2026-06-12",
+    "merchant": "Costco",
+    "amount": 89.29,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0147",
+    "date": "2026-06-12",
+    "merchant": "Philz Coffee",
+    "amount": 8.49,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0162",
+    "date": "2026-06-12",
+    "merchant": "REI",
+    "amount": 213.12,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0173",
+    "date": "2026-06-12",
+    "merchant": "Best Buy",
+    "amount": 178.87,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0264",
+    "date": "2026-06-12",
+    "merchant": "Clipper Card",
+    "amount": 28.03,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0163",
+    "date": "2026-06-13",
+    "merchant": "Ramen Nagi",
+    "amount": 45.07,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0266",
+    "date": "2026-06-13",
+    "merchant": "Ramen Nagi",
+    "amount": 20.32,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0037",
+    "date": "2026-06-14",
+    "merchant": "Best Buy",
+    "amount": 220.61,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0142",
+    "date": "2026-06-14",
+    "merchant": "Steam",
+    "amount": 59.19,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0244",
+    "date": "2026-06-14",
+    "merchant": "REI",
+    "amount": 155.19,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0246",
+    "date": "2026-06-14",
+    "merchant": "Safeway",
+    "amount": 22.79,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0260",
+    "date": "2026-06-14",
+    "merchant": "Peet's",
+    "amount": 5.87,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0009",
+    "date": "2026-06-15",
+    "merchant": "The New York Times",
+    "amount": 25,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0029",
+    "date": "2026-06-15",
+    "merchant": "Costco",
+    "amount": 76.81,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0097",
+    "date": "2026-06-15",
+    "merchant": "Sweetgreen",
+    "amount": 43.55,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0127",
+    "date": "2026-06-15",
+    "merchant": "Starbucks",
+    "amount": 5.49,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0182",
+    "date": "2026-06-15",
+    "merchant": "Ticketmaster",
+    "amount": 15.08,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0198",
+    "date": "2026-06-15",
+    "merchant": "Peet's",
+    "amount": 6.41,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0207",
+    "date": "2026-06-15",
+    "merchant": "Steam",
+    "amount": 101.27,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0232",
+    "date": "2026-06-15",
+    "merchant": "Peet's",
+    "amount": 6.15,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0242",
+    "date": "2026-06-15",
+    "merchant": "Target",
+    "amount": 191.39,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0123",
+    "date": "2026-06-16",
+    "merchant": "Starbucks",
+    "amount": 9.41,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0149",
+    "date": "2026-06-16",
+    "merchant": "Philz Coffee",
+    "amount": 13.08,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0172",
+    "date": "2026-06-16",
+    "merchant": "Chipotle",
+    "amount": 52.25,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0201",
+    "date": "2026-06-16",
+    "merchant": "Ticketmaster",
+    "amount": 39.14,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0270",
+    "date": "2026-06-16",
+    "merchant": "Philz Coffee",
+    "amount": 4.16,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0024",
+    "date": "2026-06-17",
+    "merchant": "Planet Fitness",
+    "amount": 24.99,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0052",
+    "date": "2026-06-17",
+    "merchant": "Lyft",
+    "amount": 43.24,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0109",
+    "date": "2026-06-18",
+    "merchant": "Target",
+    "amount": 100.33,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0034",
+    "date": "2026-06-19",
+    "merchant": "Chevron",
+    "amount": 38.54,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0043",
+    "date": "2026-06-19",
+    "merchant": "Steam",
+    "amount": 23.44,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0153",
+    "date": "2026-06-19",
+    "merchant": "Shell",
+    "amount": 24.02,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0254",
+    "date": "2026-06-19",
+    "merchant": "Safeway",
+    "amount": 179.23,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0299",
+    "date": "2026-06-19",
+    "merchant": "Shell",
+    "amount": 6.46,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0027",
+    "date": "2026-06-20",
+    "merchant": "Pacific Gas & Electric",
+    "amount": 151.32,
+    "category": "utility"
+  },
+  {
+    "id": "txn_0041",
+    "date": "2026-06-20",
+    "merchant": "Pizzeria Delfina",
+    "amount": 27.84,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0085",
+    "date": "2026-06-20",
+    "merchant": "Ticketmaster",
+    "amount": 82.29,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0256",
+    "date": "2026-06-20",
+    "merchant": "Best Buy",
+    "amount": 214.74,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0015",
+    "date": "2026-06-22",
+    "merchant": "YouTube Premium",
+    "amount": 18.99,
+    "category": "subscription"
+  },
+  {
+    "id": "txn_0179",
+    "date": "2026-06-22",
+    "merchant": "Steam",
+    "amount": 104.77,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0151",
+    "date": "2026-06-23",
+    "merchant": "Starbucks",
+    "amount": 12.28,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0194",
+    "date": "2026-06-23",
+    "merchant": "Uniqlo",
+    "amount": 118.63,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0230",
+    "date": "2026-06-23",
+    "merchant": "Steam",
+    "amount": 117.66,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0035",
+    "date": "2026-06-24",
+    "merchant": "Shell",
+    "amount": 23.42,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0064",
+    "date": "2026-06-24",
+    "merchant": "Starbucks",
+    "amount": 10.92,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0089",
+    "date": "2026-06-24",
+    "merchant": "Starbucks",
+    "amount": 7.42,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0121",
+    "date": "2026-06-24",
+    "merchant": "Trader Joe's",
+    "amount": 53.47,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0137",
+    "date": "2026-06-24",
+    "merchant": "Starbucks",
+    "amount": 4.05,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0277",
+    "date": "2026-06-24",
+    "merchant": "Philz Coffee",
+    "amount": 9.26,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0145",
+    "date": "2026-06-25",
+    "merchant": "AMC Theatres",
+    "amount": 22.2,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0180",
+    "date": "2026-06-25",
+    "merchant": "Safeway",
+    "amount": 149.52,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0073",
+    "date": "2026-06-26",
+    "merchant": "Clipper Card",
+    "amount": 8.93,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0076",
+    "date": "2026-06-26",
+    "merchant": "Costco",
+    "amount": 106.52,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0128",
+    "date": "2026-06-26",
+    "merchant": "Target",
+    "amount": 58.4,
+    "category": "shopping"
+  },
+  {
+    "id": "txn_0084",
+    "date": "2026-06-27",
+    "merchant": "Blue Bottle",
+    "amount": 10.06,
+    "category": "dining"
+  },
+  {
+    "id": "txn_0086",
+    "date": "2026-06-27",
+    "merchant": "Ticketmaster",
+    "amount": 36.17,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0132",
+    "date": "2026-06-27",
+    "merchant": "Peet's",
+    "amount": 6.53,
+    "category": "coffee"
+  },
+  {
+    "id": "txn_0063",
+    "date": "2026-06-28",
+    "merchant": "Clipper Card",
+    "amount": 40.53,
+    "category": "transport"
+  },
+  {
+    "id": "txn_0087",
+    "date": "2026-06-28",
+    "merchant": "Costco",
+    "amount": 174.77,
+    "category": "groceries"
+  },
+  {
+    "id": "txn_0134",
+    "date": "2026-06-28",
+    "merchant": "AMC Theatres",
+    "amount": 94.49,
+    "category": "entertainment"
+  },
+  {
+    "id": "txn_0220",
+    "date": "2026-06-28",
+    "merchant": "Ticketmaster",
+    "amount": 99.57,
+    "category": "entertainment"
+  }
+]
