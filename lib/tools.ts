@@ -47,6 +47,11 @@ export const tools: Anthropic.Tool[] = [
             required: ["id", "date", "merchant", "amount"],
           },
         },
+        confidence: {
+          type: "string",
+          description:
+            "Your confidence or hedge about these findings, in your own words — stored verbatim.",
+        },
       },
       required: ["transactions"],
       additionalProperties: false,
