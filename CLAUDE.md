@@ -75,6 +75,14 @@ stores its **evidence** (`tool_input` / `tool_output`) next to its **verdict**
 | `verification`     | jsonb, null   | **verdict** — how/whether the hop was checked       |
 | `created_at`       | timestamptz   | `now()`                                             |
 
+> **This column set is the authoritative Day-0 design decision — do not casually
+> refactor it.** It was chosen deliberately, not scaffolded. The viewer can only ever
+> show what a hop preserved at write time, so a column omitted here is evidence that can
+> never be recovered for past runs. Adding a column later is cheap; changing or dropping
+> one is a migration against historical data. Treat any change to these columns as a
+> schema decision requiring explicit sign-off, and keep `traces` (the migration),
+> `lib/trace.ts` (types + `writeTrace`), the viewer, and this table in lockstep.
+
 ## Working rules
 
 1. **Every agent hop writes a trace row before anything renders.** The trace store is the
