@@ -58,6 +58,21 @@ export default function FleetRow({
           </span>
 
           <span className="flex shrink-0 items-center gap-1.5">
+            {signal.stakes && (
+              <span className="rounded-full border border-stone-200 px-2 py-0.5 text-xs font-medium text-stone-500">
+                {signal.stakes}
+              </span>
+            )}
+            {signal.consumers > 0 && (
+              <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
+                feeds {signal.consumers} loop{signal.consumers === 1 ? "" : "s"}
+              </span>
+            )}
+            {signal.trippedEdges > 0 && (
+              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                guardrail tripped
+              </span>
+            )}
             {signal.passed > 0 && (
               <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
                 {signal.passed} confirmed

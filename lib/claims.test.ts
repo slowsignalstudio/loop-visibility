@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { extractVerifiedClaims, readClaims } from "./claims";
+import { claimDoubt, extractVerifiedClaims, partitionClaims, readClaims } from "./claims";
 import { runTool } from "./toolRunners";
 import type { Trace } from "./trace";
 
@@ -10,6 +10,7 @@ import type { Trace } from "./trace";
 
 const state = {
   tracesResult: { data: null as unknown, error: null as { message: string } | null },
+  reviewsResult: { data: [] as unknown, error: null as { message: string } | null },
   edgeResult: { error: null as { message: string } | null },
   insertedEdges: null as Record<string, unknown>[] | null,
 };
@@ -23,6 +24,13 @@ vi.mock("./supabaseClient", () => ({
             eq: () => ({
               order: async () => state.tracesResult,
             }),
+          }),
+        };
+      }
+      if (table === "reviews") {
+        return {
+          select: () => ({
+            eq: async () => state.reviewsResult,
           }),
         };
       }
@@ -41,6 +49,7 @@ vi.mock("./supabaseClient", () => ({
 
 afterEach(() => {
   state.tracesResult = { data: null, error: null };
+  state.reviewsResult = { data: [], error: null };
   state.edgeResult = { error: null };
   state.insertedEdges = null;
 });
@@ -67,7 +76,7 @@ function hop(partial: Partial<Trace>): Trace {
   };
 }
 
-const CONFIDENCE = "High confidence on Netflix; AWS looks usage-metered, may be spurious.";
+const CONFIDENCE = "Three clean steps; AWS looks usage-metered, may be spurious.";
 
 function producerRun(): Trace[] {
   return [
@@ -171,13 +180,19 @@ describe("extractVerifiedClaims", () => {
 // readClaims: edge before return, loud failures.
 // ---------------------------------------------------------------------------
 
-const OPTS = { producerRunId: "producer-run", consumerRunId: "consumer-run", consumerStepIndex: 1 };
+const OPTS = {
+  producerRunId: "producer-run",
+  consumerRunId: "consumer-run",
+  consumerStepIndex: 1,
+  consumerStakes: "observes" as const,
+};
 
 describe("readClaims", () => {
   it("writes one edge row per consumable claim, then returns the claims", async () => {
     state.tracesResult = { data: producerRun(), error: null };
-    const claims = await readClaims(OPTS);
+    const { claims, withheld } = await readClaims(OPTS);
     expect(claims).toHaveLength(1);
+    expect(withheld).toEqual([]);
     expect(state.insertedEdges).toHaveLength(1);
     expect(state.insertedEdges![0]).toMatchObject({
       claim_id: "11111111-1111-4111-8111-111111111111",
@@ -189,10 +204,11 @@ describe("readClaims", () => {
     });
   });
 
-  it("writes no edges and returns [] when nothing is consumable", async () => {
+  it("writes no edges and returns nothing when nothing is consumable", async () => {
     state.tracesResult = { data: producerRun().filter((h) => h.phase !== "verify"), error: null };
-    const claims = await readClaims(OPTS);
+    const { claims, withheld } = await readClaims(OPTS);
     expect(claims).toEqual([]);
+    expect(withheld).toEqual([]);
     expect(state.insertedEdges).toBeNull();
   });
 
@@ -205,5 +221,128 @@ describe("readClaims", () => {
     state.tracesResult = { data: producerRun(), error: null };
     state.edgeResult = { error: { message: "edge down" } };
     await expect(readClaims(OPTS)).rejects.toThrow(/readClaims failed writing claim_edges: edge down/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The guardrail (increment E): undischarged doubt crossing into higher stakes.
+// ---------------------------------------------------------------------------
+
+/** A producer whose hedge names a claim that PASSED verify — undischarged doubt. */
+function hedgedPassingRun(): Trace[] {
+  return [
+    hop({
+      phase: "act",
+      model_confidence: "Not sure about Netflix — the charge pattern is unclear.",
+      tool_output: {
+        price_changes: [
+          { claim_id: "11111111-1111-4111-8111-111111111111", merchant: "Netflix", old_price: 15.49, new_price: 17.99, delta: 2.5 },
+        ],
+        total_monthly_impact: 2.5,
+      },
+    }),
+    hop({
+      phase: "verify",
+      tool_output: {
+        passed: 1,
+        failed: 0,
+        results: [
+          {
+            claim_id: "11111111-1111-4111-8111-111111111111",
+            merchant: "Netflix",
+            claim: { old_price: 15.49, new_price: 17.99 },
+            pass: true,
+            reason: "clean step",
+            supporting_rows: [],
+          },
+        ],
+      },
+    }),
+  ];
+}
+
+describe("claimDoubt", () => {
+  const results = [
+    { merchant: "Netflix", pass: true },
+    { merchant: "AWS", pass: false },
+  ];
+
+  it("finds no doubt in a clean, confident statement", () => {
+    expect(claimDoubt("Three clean steps, high confidence.", "Netflix", results)).toBeNull();
+  });
+
+  it("treats a hedge discharged by a reversal as clean", () => {
+    expect(
+      claimDoubt("AWS looks usage-metered, may be spurious.", "Netflix", results),
+    ).toBeNull();
+  });
+
+  it("flags a hedge on a claim verify passed anyway", () => {
+    expect(
+      claimDoubt("Not sure about Netflix, the pattern is unclear.", "Netflix", results),
+    ).toContain("passed it anyway");
+  });
+
+  it("flags a hedge that names nothing checkable", () => {
+    expect(claimDoubt("Possibly noisy data, hard to say.", "Netflix", results)).toContain(
+      "names nothing checkable",
+    );
+  });
+
+  it("flags the missing-confidence sentinel", () => {
+    expect(claimDoubt("no confidence stated", "Netflix", results)).toContain("no confidence");
+  });
+});
+
+describe("partitionClaims (the boundary decision)", () => {
+  it("lets everything cross at equal stakes, doubt or not", () => {
+    const p = partitionClaims(hedgedPassingRun(), "observes", false);
+    expect(p.claims).toHaveLength(1);
+    expect(p.withheld).toEqual([]);
+  });
+
+  it("withholds a hedged-and-passed claim from a higher-stakes consumer", () => {
+    const p = partitionClaims(hedgedPassingRun(), "recommends", false);
+    expect(p.claims).toEqual([]);
+    expect(p.withheld).toHaveLength(1);
+    expect(p.withheld[0].merchant).toBe("Netflix");
+    expect(p.withheld[0].reason).toContain("passed it anyway");
+  });
+
+  it("lets a discharged hedge cross into higher stakes", () => {
+    const p = partitionClaims(producerRun(), "recommends", false);
+    expect(p.claims).toHaveLength(1); // Netflix; the AWS hedge was discharged by its reversal
+    expect(p.withheld).toEqual([]);
+  });
+
+  it("releases withheld claims once a supervisor approved the producer run", () => {
+    const p = partitionClaims(hedgedPassingRun(), "recommends", true);
+    expect(p.claims).toHaveLength(1);
+    expect(p.withheld).toEqual([]);
+  });
+});
+
+describe("readClaims with the guardrail", () => {
+  const HIGH_STAKES = { ...OPTS, consumerStakes: "recommends" as const };
+
+  it("writes a tripped edge for a withheld claim and does not return it", async () => {
+    state.tracesResult = { data: hedgedPassingRun(), error: null };
+    const { claims, withheld } = await readClaims(HIGH_STAKES);
+    expect(claims).toEqual([]);
+    expect(withheld).toHaveLength(1);
+    expect(state.insertedEdges).toHaveLength(1);
+    expect(state.insertedEdges![0]).toMatchObject({
+      claim_id: "11111111-1111-4111-8111-111111111111",
+      tripped: true,
+    });
+  });
+
+  it("releases the claim when the producer run carries an approval", async () => {
+    state.tracesResult = { data: hedgedPassingRun(), error: null };
+    state.reviewsResult = { data: [{ run_id: "producer-run", decision: "approved" }], error: null };
+    const { claims, withheld } = await readClaims(HIGH_STAKES);
+    expect(claims).toHaveLength(1);
+    expect(withheld).toEqual([]);
+    expect(state.insertedEdges![0]).toMatchObject({ tripped: false });
   });
 });

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { createBrowserClient } from "@/lib/supabaseClient";
 import type { Trace } from "@/lib/trace";
-import { rollUpRuns, type RunSignal } from "@/lib/fleet";
+import { applyEdges, rollUpRuns, type EdgeLite, type RunSignal } from "@/lib/fleet";
 import type { Review, ReviewDecision } from "@/lib/reviews";
 import FleetRow from "@/components/FleetRow";
 
@@ -27,9 +27,10 @@ export default function FleetOverview() {
   // surfaced loudly (Day 3 lesson: silent error handling turns minutes into an hour).
   const load = useCallback(async () => {
     const supabase = createBrowserClient();
-    const [traces, reviews] = await Promise.all([
+    const [traces, reviews, edges] = await Promise.all([
       supabase.from("traces").select().order("created_at", { ascending: false }).limit(TRACE_PAGE),
       supabase.from("reviews").select().order("created_at", { ascending: false }),
+      supabase.from("claim_edges").select().order("created_at", { ascending: false }),
     ]);
     if (traces.error) {
       setError(`Trace read failed: ${traces.error.message}`);
@@ -37,9 +38,15 @@ export default function FleetOverview() {
       setError(
         `Review read failed: ${reviews.error.message} — has supabase/migrations/0002_reviews.sql been applied?`,
       );
+    } else if (edges.error) {
+      setError(
+        `Claim-edge read failed: ${edges.error.message} — has supabase/migrations/0003_claim_edges.sql been applied?`,
+      );
     } else {
       setError(null);
-      setSignals(rollUpRuns((traces.data ?? []) as Trace[]));
+      setSignals(
+        applyEdges(rollUpRuns((traces.data ?? []) as Trace[]), (edges.data ?? []) as EdgeLite[]),
+      );
       const latest = new Map<string, ReviewDecision>();
       for (const r of (reviews.data ?? []) as Review[]) {
         if (!latest.has(r.run_id)) latest.set(r.run_id, r.decision); // rows arrive newest-first
@@ -57,7 +64,11 @@ export default function FleetOverview() {
     load();
   }, [load]);
 
-  const needsYou = signals.filter((s) => s.triage === "needs_you" && !reviewByRun.has(s.runId));
+  // Tripped guardrails first: undischarged doubt a higher-stakes loop is waiting on
+  // outranks doubt nothing depends on (doubt times downstream stakes, per the brief).
+  const needsYou = signals
+    .filter((s) => s.triage === "needs_you" && !reviewByRun.has(s.runId))
+    .sort((a, b) => b.trippedEdges - a.trippedEdges);
   const safe = signals.filter((s) => s.triage === "safe" && !reviewByRun.has(s.runId));
   const reviewed = signals.filter((s) => reviewByRun.has(s.runId));
   const reversalsCaught = signals.reduce((n, s) => n + s.reversed, 0);

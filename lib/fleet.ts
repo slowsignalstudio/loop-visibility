@@ -25,6 +25,8 @@ export type RunSignal = {
   headline: string;
   /** The model's act-phase confidence, verbatim. Never paraphrased. */
   confidence: string | null;
+  /** The run's declared+derived stakes tier from its plan hop, null for older runs. */
+  stakes: string | null;
   claims: number; // flagged in act
   passed: number; // confirmed by verify
   reversed: number; // rejected by verify (doubt discharged, kept visible)
@@ -34,6 +36,10 @@ export type RunSignal = {
   /** Why this run needs the supervisor. Empty for safe runs. */
   reasons: string[];
   triage: RunTriage;
+  /** Distinct downstream runs that consumed this run's claims (from claim_edges). */
+  consumers: number;
+  /** Edges where the boundary guardrail withheld a claim from a consumer. */
+  trippedEdges: number;
 };
 
 type PriceChange = { merchant: string; old_price: number; new_price: number };
@@ -43,11 +49,12 @@ function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null;
 }
 
-/** Hedge markers, matched against the model's own words. */
-const HEDGE_RE =
+/** Hedge markers, matched against the model's own words. Shared with the guardrail in
+ *  lib/claims.ts so both layers agree on what counts as doubt. */
+export const HEDGE_RE =
   /\b(not sure|may be|might|possibly|unclear|uncertain|suspect|usage[- ](based|metered)|metered|not a (fixed|true)|hard to say|low confidence|caution)/i;
 
-const NO_CONFIDENCE = "no confidence stated";
+export const NO_CONFIDENCE = "no confidence stated";
 
 const money = (n: number) => `$${(Math.round(n * 100) / 100).toFixed(2)}`;
 
@@ -60,6 +67,10 @@ export function rollUpRun(hops: Trace[]): RunSignal {
   const actHop = ordered.find((h) => h.phase === "act");
   const verifyHop = ordered.find((h) => h.phase === "verify");
   const confidence = actHop?.model_confidence ?? null;
+
+  const planHop = ordered.find((h) => h.phase === "plan");
+  const planInput = isRecord(planHop?.tool_input) ? planHop.tool_input : null;
+  const stakes = typeof planInput?.stakes === "string" ? planInput.stakes : null;
 
   const actOut = isRecord(actHop?.tool_output) ? actHop.tool_output : null;
   const flagged: PriceChange[] = Array.isArray(actOut?.price_changes)
@@ -141,6 +152,7 @@ export function rollUpRun(hops: Trace[]): RunSignal {
     hopCount: ordered.length,
     headline,
     confidence,
+    stakes,
     claims: flagged.length,
     passed,
     reversed,
@@ -148,7 +160,51 @@ export function rollUpRun(hops: Trace[]): RunSignal {
     totalImpact: totalImpact !== null ? Math.round(totalImpact * 100) / 100 : null,
     reasons,
     triage: reasons.length > 0 ? "needs_you" : "safe",
+    consumers: 0,
+    trippedEdges: 0,
   };
+}
+
+/** The slice of a claim_edges row the overview needs. */
+export type EdgeLite = {
+  producer_run_id: string;
+  consumer_run_id: string;
+  tripped: boolean;
+};
+
+/**
+ * Fold the claim graph into the signals (increment E). A producer whose claim tripped
+ * the guardrail is undischarged doubt that a HIGHER-STAKES loop is waiting on — it
+ * routes to needs-you even if it looked safe in isolation, which is exactly the
+ * doubt-times-downstream-stakes ranking from the brief. Pure, like rollUpRun.
+ */
+export function applyEdges(signals: RunSignal[], edges: EdgeLite[]): RunSignal[] {
+  const consumersByProducer = new Map<string, Set<string>>();
+  const trippedByProducer = new Map<string, number>();
+  for (const e of edges) {
+    const set = consumersByProducer.get(e.producer_run_id) ?? new Set<string>();
+    set.add(e.consumer_run_id);
+    consumersByProducer.set(e.producer_run_id, set);
+    if (e.tripped) {
+      trippedByProducer.set(e.producer_run_id, (trippedByProducer.get(e.producer_run_id) ?? 0) + 1);
+    }
+  }
+
+  return signals.map((s) => {
+    const consumers = consumersByProducer.get(s.runId)?.size ?? 0;
+    const trippedEdges = trippedByProducer.get(s.runId) ?? 0;
+    if (trippedEdges === 0) return { ...s, consumers, trippedEdges };
+    return {
+      ...s,
+      consumers,
+      trippedEdges,
+      reasons: [
+        ...s.reasons,
+        `shaky claim feeding a higher-stakes loop — guardrail tripped ${trippedEdges} time${trippedEdges === 1 ? "" : "s"}`,
+      ],
+      triage: "needs_you",
+    };
+  });
 }
 
 /** Group a flat page of trace rows by run and roll each run up, newest run first. */

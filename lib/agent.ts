@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { randomUUID } from "node:crypto";
 import { tools } from "@/lib/tools";
 import { runTool } from "@/lib/toolRunners";
+import { resolveStakes, deriveStakesFloor, type Stakes } from "@/lib/stakes";
 
 /**
  * The money-check-in agent loop, extracted so it can run in two places: the API route
@@ -23,16 +24,37 @@ After verification, give a short final recommendation citing only the changes th
 export const TASK =
   "Find subscriptions whose price changed this quarter (April–June 2026), compute the total monthly impact, and draft a recommendation.";
 
-/** One hop the agent took. Mirrors the trace schema, minus the DB-assigned fields. */
+/** One hop the agent took. Mirrors the trace schema, minus the DB-assigned fields.
+ *  `tool_name` is null for the run-opening plan hop, which declares stakes rather than
+ *  invoking a tool. */
 export type Hop = {
   step_index: number;
   phase: string;
-  tool_name: string;
+  tool_name: string | null;
   tool_input: Record<string, unknown>;
   tool_output: unknown;
   model_confidence: string | null;
   verification: unknown;
 };
+
+/** The run-opening plan hop (increment C): declares what this loop is allowed to affect,
+ *  with the tool manifest as checkable evidence. Shared by both agent loops. */
+export function planHop(declared: Stakes, toolNames: string[]): Hop {
+  return {
+    step_index: 0,
+    phase: "plan",
+    tool_name: null,
+    tool_input: {
+      stakes: resolveStakes(declared, toolNames),
+      declared_stakes: declared,
+      derived_floor: deriveStakesFloor(toolNames),
+      tool_manifest: toolNames,
+    },
+    tool_output: null,
+    model_confidence: null,
+    verification: null,
+  };
+}
 
 export type AgentResult = {
   runId: string;
@@ -56,9 +78,18 @@ export async function runAgent({ runId, onHop }: RunAgentOptions = {}): Promise<
   const client = new Anthropic();
   const messages: Anthropic.MessageParam[] = [{ role: "user", content: TASK }];
   const hops: Hop[] = [];
-  let step_index = 0;
   let stop_reason = "";
   let final = "";
+
+  // The run opens by declaring its stakes — traced before the first model call, so even
+  // a run that dies immediately left a record of what it was allowed to affect.
+  const plan = planHop(
+    "observes", // the money check-in reads and computes; it changes nothing
+    tools.map((t) => t.name),
+  );
+  hops.push(plan);
+  await onHop?.(plan);
+  let step_index = 1;
 
   for (let turn = 0; turn < MAX_STEPS; turn++) {
     const res = await client.messages.create({

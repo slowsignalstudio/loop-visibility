@@ -11,7 +11,8 @@ import StepRow from "@/components/StepRow";
 // only for the live "thinking" indicator, so a rough guess based on the arc is fine.
 function nextPhaseLabel(rows: Trace[]): string {
   const last = rows[rows.length - 1]?.phase;
-  if (!last) return "gathering transactions";
+  if (!last) return "declaring its stakes";
+  if (last === "plan") return "gathering transactions";
   if (last === "gather") return "analysing recurring charges";
   if (last === "act") return "verifying each claim against the raw rows";
   return "drafting the recommendation";
@@ -96,6 +97,43 @@ export default function RunViewer({ initialRunId }: { initialRunId?: string }) {
     return () => clearInterval(interval);
   }, [runId, running, addRows]);
 
+  // Consume this run's verified claims with the cancellation-drafter loop (the claim
+  // graph's first consumer). The viewer swaps to the consumer's run_id and watches its
+  // trace land; the URL is patched shallowly so a reload lands on the new run.
+  const draftFrom = useCallback(async () => {
+    const producerId = runId;
+    if (!producerId) return;
+    const id = crypto.randomUUID();
+    setRows([]);
+    setError(null);
+    setRunId(id);
+    setRunning(true);
+    window.history.replaceState(null, "", `/run/${id}`);
+    try {
+      const res = await fetch("/api/draft", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ run_id: id, producer_run_id: producerId }),
+      });
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        setError(body.error ?? `Draft failed with HTTP ${res.status}.`);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Network error reaching /api/draft.");
+    } finally {
+      const supabase = createBrowserClient();
+      const { data, error: readErr } = await supabase
+        .from("traces")
+        .select()
+        .eq("run_id", id)
+        .order("step_index");
+      if (readErr) setError(`Read failed: ${readErr.message}`);
+      else if (data) addRows(data as Trace[]);
+      setRunning(false);
+    }
+  }, [runId, addRows]);
+
   const start = useCallback(async () => {
     const id = crypto.randomUUID();
     setRows([]);
@@ -159,6 +197,14 @@ export default function RunViewer({ initialRunId }: { initialRunId?: string }) {
         >
           {running ? "Running…" : "Run money check-in"}
         </button>
+        {!running && rows.some((r) => r.phase === "verify" && r.tool_name === "verify_findings") && (
+          <button
+            onClick={draftFrom}
+            className="rounded-lg border border-stone-300 px-4 py-2.5 text-sm font-medium text-stone-700 transition hover:bg-stone-50"
+          >
+            Draft cancellations from this run
+          </button>
+        )}
         <div className="flex items-center gap-2 text-xs text-stone-400">
           <span className="font-mono">{runId ? runId.slice(0, 8) : "—"}</span>
           <span aria-hidden>·</span>

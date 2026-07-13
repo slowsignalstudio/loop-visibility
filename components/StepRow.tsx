@@ -25,12 +25,14 @@ const toneChip: Record<StepTone, string> = {
 };
 
 const phaseDot: Record<string, string> = {
+  plan: "bg-violet-500",
   gather: "bg-slate-400",
   act: "bg-amber-500",
   verify: "bg-emerald-500",
 };
 
 const phaseLabel: Record<string, string> = {
+  plan: "Plan",
   gather: "Gather",
   act: "Act",
   verify: "Verify",

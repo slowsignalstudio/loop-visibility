@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { rollUpRun, rollUpRuns } from "./fleet";
+import { applyEdges, rollUpRun, rollUpRuns } from "./fleet";
 import type { Trace } from "./trace";
 
 // Fabricate trace rows in the exact shapes the real tools write, so the roll-up is
@@ -158,6 +158,70 @@ describe("rollUpRun", () => {
     ]);
     expect(s.triage).toBe("needs_you");
     expect(s.headline).toContain("no analysis");
+  });
+});
+
+describe("stakes from the plan hop", () => {
+  it("reads the declared+derived stakes tier, null when the run predates increment C", () => {
+    const rows = fullRun({
+      confidence: "High confidence.",
+      flagged: [change("Netflix", 15.49, 17.99)],
+      results: [result("Netflix", 15.49, 17.99, true)],
+    });
+    expect(rollUpRun(rows).stakes).toBeNull();
+
+    const withPlan = [
+      hop({
+        phase: "plan",
+        step_index: 0,
+        tool_input: { stakes: "recommends", declared_stakes: "recommends", derived_floor: "recommends", tool_manifest: ["read_claims"] },
+      }),
+      ...rows,
+    ];
+    expect(rollUpRun(withPlan).stakes).toBe("recommends");
+  });
+});
+
+describe("applyEdges (exposure, increment E)", () => {
+  const cleanSignal = () =>
+    rollUpRun(
+      fullRun({
+        confidence: "High confidence: clean steps.",
+        flagged: [change("Netflix", 15.49, 17.99)],
+        results: [result("Netflix", 15.49, 17.99, true)],
+      }).map((h) => ({ ...h, run_id: "producer-a" })),
+    );
+
+  it("routes a safe-looking producer to needs-you when its claim tripped a guardrail", () => {
+    const base = cleanSignal();
+    expect(base.triage).toBe("safe");
+
+    const [s] = applyEdges([base], [
+      { producer_run_id: "producer-a", consumer_run_id: "drafter-1", tripped: true },
+    ]);
+    expect(s.triage).toBe("needs_you");
+    expect(s.trippedEdges).toBe(1);
+    expect(s.reasons.at(-1)).toContain("higher-stakes loop");
+  });
+
+  it("counts distinct consumers without changing triage for clean edges", () => {
+    const [s] = applyEdges(
+      [cleanSignal()],
+      [
+        { producer_run_id: "producer-a", consumer_run_id: "drafter-1", tripped: false },
+        { producer_run_id: "producer-a", consumer_run_id: "drafter-1", tripped: false },
+        { producer_run_id: "producer-a", consumer_run_id: "drafter-2", tripped: false },
+      ],
+    );
+    expect(s.consumers).toBe(2);
+    expect(s.trippedEdges).toBe(0);
+    expect(s.triage).toBe("safe");
+  });
+
+  it("leaves runs without edges untouched", () => {
+    const [s] = applyEdges([cleanSignal()], []);
+    expect(s.consumers).toBe(0);
+    expect(s.triage).toBe("safe");
   });
 });
 

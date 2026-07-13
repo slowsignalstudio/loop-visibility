@@ -32,6 +32,55 @@ export function summarize(row: Trace): StepSummary {
   const tool = row.tool_name ?? "—";
   const out = row.tool_output;
 
+  // The run-opening stakes declaration (claim graph, increment C). Evidence lives in
+  // tool_input: what the run declared, and the manifest the floor was derived from.
+  if (row.phase === "plan" && isRecord(row.tool_input)) {
+    const inp = row.tool_input;
+    const stakes = typeof inp.stakes === "string" ? inp.stakes : "unknown";
+    const manifest = Array.isArray(inp.tool_manifest) ? inp.tool_manifest.length : 0;
+    return {
+      phase: "plan",
+      tool,
+      headline: `Declared stakes: ${stakes}, floor derived from ${manifest} tools.`,
+      status: stakes,
+      tone: "neutral",
+    };
+  }
+
+  // Drafter loop: consuming another run's verified claims (increment D). Claims the
+  // boundary guardrail withheld are surfaced right here in the headline (increment E).
+  if (row.tool_name === "read_claims" && isRecord(out)) {
+    const count = num(out.count);
+    const withheld = Array.isArray(out.withheld) ? out.withheld.length : 0;
+    return {
+      phase: "gather",
+      tool,
+      headline:
+        withheld > 0
+          ? `Consumed ${count} verified claim${count === 1 ? "" : "s"}; guardrail withheld ${withheld} pending supervisor approval.`
+          : `Consumed ${count} verified claim${count === 1 ? "" : "s"} via readClaims().`,
+      status: withheld > 0 ? `${withheld} withheld` : `${count} claims`,
+      tone: withheld > 0 ? "flag" : "neutral",
+    };
+  }
+
+  // Drafter loop: the cancellation decision.
+  if (row.tool_name === "decide_cancellations" && isRecord(out)) {
+    const cancel = Array.isArray(out.cancel) ? out.cancel.length : 0;
+    const keep = Array.isArray(out.keep) ? out.keep.length : 0;
+    const limit = num(out.limit);
+    return {
+      phase: "act",
+      tool,
+      headline:
+        cancel === 0
+          ? `All ${keep} increases fit under the $${limit}/mo limit; nothing to cancel.`
+          : `Recommended cancelling ${cancel} of ${cancel + keep} increases to stay under $${limit}/mo.`,
+      status: `${cancel} to cancel`,
+      tone: cancel > 0 ? "flag" : "neutral",
+    };
+  }
+
   if (row.phase === "gather" && isRecord(out)) {
     const count = num(out.count);
     return {
