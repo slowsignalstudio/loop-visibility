@@ -1,198 +1,219 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
 import { createBrowserClient } from "@/lib/supabaseClient";
 import type { Trace } from "@/lib/trace";
-import StepRow from "@/components/StepRow";
+import { rollUpRuns, type RunSignal } from "@/lib/fleet";
+import type { Review, ReviewDecision } from "@/lib/reviews";
+import FleetRow from "@/components/FleetRow";
 
-// Given the hops so far, name the phase the agent is most likely working on next. Used
-// only for the live "thinking" indicator, so a rough guess based on the arc is fine.
-function nextPhaseLabel(rows: Trace[]): string {
-  const last = rows[rows.length - 1]?.phase;
-  if (!last) return "gathering transactions";
-  if (last === "gather") return "analysing recurring charges";
-  if (last === "act") return "verifying each claim against the raw rows";
-  return "drafting the recommendation";
-}
+// Level 1: the fleet overview, the supervisor's default position. Its single decision is
+// WHERE DO I LOOK. Every run appears as a trust signal rolled up from its claims
+// (lib/fleet.ts), grouped into what needs the supervisor and what is safe. The safe
+// majority clears in one action — each cleared run still gets its own review row, so the
+// single click leaves a defensible record per run. Descend only for risk.
 
-// The viewer reads ONLY from trace rows. It subscribes to the `traces` table via Supabase
-// realtime, filtered by run_id, and appends each row as formatted JSON in a monospace
-// column. A 1-second poll runs alongside as the fallback (and initial load) so the viewer
-// works even before realtime's publication is enabled. No styling yet (Day 3).
+const TRACE_PAGE = 800; // most recent hops; ~50+ runs at current loop length
 
-export default function Home() {
-  const [rows, setRows] = useState<Trace[]>([]);
-  const [runId, setRunId] = useState<string | null>(null);
-  const [running, setRunning] = useState(false);
-  const [transport, setTransport] = useState<"idle" | "polling" | "realtime">("idle");
+export default function FleetOverview() {
+  const [signals, setSignals] = useState<RunSignal[]>([]);
+  const [reviewByRun, setReviewByRun] = useState<Map<string, ReviewDecision>>(new Map());
+  const [loading, setLoading] = useState(true);
+  const [clearing, setClearing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Pure updater: dedupe against the rows we already have, with no external state to
-  // mutate. React Strict Mode runs updaters twice in dev to catch impurity, so mutating
-  // an outside Set here would drop every row on the second pass.
-  const addRows = useCallback((incoming: Trace[]) => {
-    setRows((prev) => {
-      const have = new Set(prev.map((r) => r.id));
-      const next = prev.slice();
-      for (const r of incoming) {
-        if (have.has(r.id)) continue;
-        have.add(r.id);
-        next.push(r);
+  // Read path: traces + reviews with the anon key, exactly what RLS exposes. Errors are
+  // surfaced loudly (Day 3 lesson: silent error handling turns minutes into an hour).
+  const load = useCallback(async () => {
+    const supabase = createBrowserClient();
+    const [traces, reviews] = await Promise.all([
+      supabase.from("traces").select().order("created_at", { ascending: false }).limit(TRACE_PAGE),
+      supabase.from("reviews").select().order("created_at", { ascending: false }),
+    ]);
+    if (traces.error) {
+      setError(`Trace read failed: ${traces.error.message}`);
+    } else if (reviews.error) {
+      setError(
+        `Review read failed: ${reviews.error.message} — has supabase/migrations/0002_reviews.sql been applied?`,
+      );
+    } else {
+      setError(null);
+      setSignals(rollUpRuns((traces.data ?? []) as Trace[]));
+      const latest = new Map<string, ReviewDecision>();
+      for (const r of (reviews.data ?? []) as Review[]) {
+        if (!latest.has(r.run_id)) latest.set(r.run_id, r.decision); // rows arrive newest-first
       }
-      next.sort((a, b) => a.step_index - b.step_index);
-      return next;
-    });
+      setReviewByRun(latest);
+    }
+    setLoading(false);
   }, []);
 
-  // Realtime subscription (+ initial load), scoped to the active run_id.
   useEffect(() => {
-    if (!runId) return;
-    const supabase = createBrowserClient();
-    const channel = supabase
-      .channel(`traces-${runId}`)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "traces", filter: `run_id=eq.${runId}` },
-        (payload) => addRows([payload.new as Trace]),
-      )
-      .subscribe((status) => {
-        if (status === "SUBSCRIBED") setTransport((t) => (t === "polling" ? t : "realtime"));
-      });
+    // Initial fetch. All setState in load() happens after the awaited reads resolve —
+    // nothing synchronous — so this cannot cascade renders; the lint rule can't see
+    // across the await boundary inside the callback.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    load();
+  }, [load]);
 
-    supabase
-      .from("traces")
-      .select()
-      .eq("run_id", runId)
-      .order("step_index")
-      .then(({ data }) => data && addRows(data as Trace[]));
+  const needsYou = signals.filter((s) => s.triage === "needs_you" && !reviewByRun.has(s.runId));
+  const safe = signals.filter((s) => s.triage === "safe" && !reviewByRun.has(s.runId));
+  const reviewed = signals.filter((s) => reviewByRun.has(s.runId));
+  const reversalsCaught = signals.reduce((n, s) => n + s.reversed, 0);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [runId, addRows]);
-
-  // Polling fallback — every second while a run is in flight.
-  useEffect(() => {
-    if (!runId || !running) return;
-    const supabase = createBrowserClient();
-    const poll = async () => {
-      const { data, error } = await supabase
-        .from("traces")
-        .select()
-        .eq("run_id", runId)
-        .order("step_index");
-      setTransport((t) => (t === "realtime" ? t : "polling"));
-      if (error) {
-        setError(`Read failed: ${error.message}`);
-        return;
-      }
-      if (data) addRows(data as Trace[]);
-    };
-    poll();
-    const interval = setInterval(poll, 1000);
-    return () => clearInterval(interval);
-  }, [runId, running, addRows]);
-
-  const start = useCallback(async () => {
-    const id = crypto.randomUUID();
-    setRows([]);
+  const clearSafe = useCallback(async () => {
+    setClearing(true);
     setError(null);
-    setRunId(id);
-    setRunning(true);
     try {
-      const res = await fetch("/api/run", {
+      const res = await fetch("/api/review", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ run_id: id }),
+        body: JSON.stringify({
+          run_ids: safe.map((s) => s.runId),
+          decision: "cleared_safe",
+          rationale: `Cleared in fleet review: every claim verified and all doubt discharged (${safe.length} runs).`,
+        }),
       });
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
-        setError(body.error ?? `Run failed with HTTP ${res.status}.`);
+        setError(body.error ?? `Clear failed with HTTP ${res.status}.`);
       }
+      await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Network error reaching /api/run.");
+      setError(e instanceof Error ? e.message : "Network error reaching /api/review.");
     } finally {
-      // Final catch-up read so the last rows land even if realtime isn't enabled.
-      const supabase = createBrowserClient();
-      const { data, error: readErr } = await supabase
-        .from("traces")
-        .select()
-        .eq("run_id", id)
-        .order("step_index");
-      if (readErr) setError(`Read failed: ${readErr.message}`);
-      else if (data) {
-        addRows(data as Trace[]);
-        if (data.length === 0) setError("Run finished but the read returned 0 rows for this run_id.");
-      }
-      setRunning(false);
+      setClearing(false);
     }
-  }, [addRows]);
+  }, [safe, load]);
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-10">
-      <header className="mb-6">
-        <h1 className="text-2xl font-semibold text-neutral-900">Loop Visibility</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Watch the agent gather, act, and verify — evidence beside every verdict.
+    <main className="mx-auto max-w-3xl px-6 py-12">
+      <header className="mb-8">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-stone-400">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          Fleet overview
+        </div>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-stone-900">Loop Visibility</h1>
+        <p className="mt-2 max-w-prose text-stone-500">
+          Every run rolled up to a trust signal derived from its claims, never the agent.
+          Undischarged doubt rises to the top; the safe majority clears in one action.
         </p>
       </header>
 
-      <div className="mb-6 flex items-center gap-4">
-        <button
-          onClick={start}
-          disabled={running}
-          className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+      <div className="mb-8 flex flex-wrap items-center gap-3">
+        <Link
+          href="/run"
+          className="rounded-lg bg-stone-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-stone-800"
         >
-          {running ? "Running…" : "Run money check-in"}
+          Run money check-in
+        </Link>
+        <button
+          onClick={load}
+          className="rounded-lg border border-stone-200 px-4 py-2.5 text-sm font-medium text-stone-600 transition hover:bg-stone-50"
+        >
+          Refresh
         </button>
-        <span className="text-xs text-neutral-400">
-          run: {runId ? runId.slice(0, 8) : "—"} · {transport} · {rows.length} hops
-        </span>
       </div>
 
       {error && (
-        <div className="mb-4 rounded-md border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-800">
-          <span className="font-semibold">Run error: </span>
+        <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+          <span className="font-semibold">Fleet error: </span>
           {error}
         </div>
       )}
 
-      {rows.length === 0 && !running ? (
-        <p className="text-sm text-neutral-400">
-          No trace rows yet. Start a run to watch hops arrive.
-        </p>
-      ) : (
-        <motion.div layout>
-          {rows.map((r) => (
-            <StepRow key={r.id} row={r} />
-          ))}
+      {/* Fleet health: the glanceable strip. Counts only; the anomaly that matters is
+          whatever sits in the needs-you group below it. */}
+      <div className="mb-8 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <Stat label="Runs" value={loading ? "…" : String(signals.length)} />
+        <Stat
+          label="Need you"
+          value={loading ? "…" : String(needsYou.length)}
+          tone={needsYou.length > 0 ? "amber" : "stone"}
+        />
+        <Stat label="Safe to clear" value={loading ? "…" : String(safe.length)} tone="emerald" />
+        <Stat label="Reversals caught" value={loading ? "…" : String(reversalsCaught)} />
+      </div>
 
-          {/* Live "thinking" state: while a run is in flight, show the agent working on
-              the next hop so the wait between rows reads as progress, not a freeze. */}
-          <AnimatePresence>
-            {running && (
-              <motion.div
-                layout
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="flex items-center gap-3 rounded-lg border border-dashed border-neutral-300 px-4 py-3"
-              >
-                <span className="flex gap-1" aria-hidden>
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-neutral-400 [animation-delay:-0.3s]" />
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-neutral-400 [animation-delay:-0.15s]" />
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-neutral-400" />
-                </span>
-                <span className="text-sm text-neutral-500">
-                  Agent is {nextPhaseLabel(rows)}…
-                </span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
+      {!loading && signals.length === 0 && !error && (
+        <div className="rounded-xl border border-dashed border-stone-300 px-6 py-14 text-center text-sm text-stone-400">
+          No runs yet. Start one, or seed a synthetic fleet with{" "}
+          <code className="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-xs">npm run seed:fleet</code>.
+        </div>
+      )}
+
+      {needsYou.length > 0 && (
+        <section className="mb-8">
+          <h2 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-600">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+            Needs you · {needsYou.length}
+          </h2>
+          <div className="space-y-2">
+            {needsYou.map((s) => (
+              <FleetRow key={s.runId} signal={s} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {safe.length > 0 && (
+        <section className="mb-8">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-stone-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              Safe · {safe.length}
+            </h2>
+            <button
+              onClick={clearSafe}
+              disabled={clearing}
+              className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:opacity-50"
+            >
+              {clearing ? "Clearing…" : `Clear all ${safe.length} safe`}
+            </button>
+          </div>
+          <div className="space-y-2">
+            {safe.map((s) => (
+              <FleetRow key={s.runId} signal={s} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {reviewed.length > 0 && (
+        <details className="mb-8">
+          <summary className="cursor-pointer select-none text-xs font-semibold uppercase tracking-wider text-stone-400">
+            Reviewed · {reviewed.length}
+          </summary>
+          <div className="mt-3 space-y-2">
+            {reviewed.map((s) => (
+              <FleetRow key={s.runId} signal={s} review={reviewByRun.get(s.runId)} />
+            ))}
+          </div>
+        </details>
       )}
     </main>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  tone = "stone",
+}: {
+  label: string;
+  value: string;
+  tone?: "stone" | "amber" | "emerald";
+}) {
+  const tones = {
+    stone: "text-stone-900",
+    amber: "text-amber-600",
+    emerald: "text-emerald-600",
+  } as const;
+  return (
+    <div className="rounded-xl border border-stone-200 bg-white px-4 py-3">
+      <div className={`text-2xl font-semibold tabular-nums ${tones[tone]}`}>{value}</div>
+      <div className="mt-0.5 text-xs font-medium uppercase tracking-wide text-stone-400">{label}</div>
+    </div>
   );
 }

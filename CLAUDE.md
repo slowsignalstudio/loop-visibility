@@ -44,8 +44,25 @@ Dev server: `npm run dev` → http://localhost:3000.
 
 ## Architecture
 
-- `app/layout.tsx`, `app/page.tsx` — App Router entry; `page.tsx` is the trace viewer
-  (server component; reads recent traces). Unstyled for now.
+- `app/layout.tsx`, `app/page.tsx` — App Router entry; `page.tsx` is the **fleet
+  overview** (Level 1 of the fleet supervisor, see `design/fleet-supervisor-brief.md`):
+  runs rolled up to claim-derived trust signals, triaged needs-you vs safe, with a
+  one-action clear for the safe majority.
+- `app/run/page.tsx`, `app/run/[runId]/page.tsx` — the hop-trace viewer (Level 3),
+  rendered by `components/RunViewer.tsx`; `/run` starts a fresh run, `/run/<id>` is the
+  drill-down from the fleet overview.
+- `lib/fleet.ts` — pure roll-up: `rollUpRuns(rows)` groups trace rows by run and derives
+  each run's `RunSignal` (headline, confidence verbatim, confirmed/reversed/unverified,
+  triage). Doubt counts as discharged only when verify resolved it; tested in
+  `lib/fleet.test.ts`.
+- `lib/reviews.ts` + `app/api/review/route.ts` + `supabase/migrations/0002_reviews.sql`
+  — supervisor decisions (`approved` / `rejected` / `cleared_safe`), one row per run per
+  decision, written server-side only.
+- `lib/claims.ts` + `supabase/migrations/0003_claim_edges.sql` — the claim graph (see
+  `design/claim-graph-increment.md`): `analyze_recurring` mints a `claim_id` per price
+  change (carried through verify), and `readClaims()` is the ONLY legal way to consume
+  another run's verified claims — it writes one `claim_edges` row per claim before
+  returning, throws on failure. Claims without ids cannot cross a loop boundary.
 - `lib/supabaseClient.ts` — two clients:
   - `createBrowserClient()` — anon key, **read** side (viewer/queries).
   - `createServiceClient()` — service-role key, **server-only writes**. Never import into a

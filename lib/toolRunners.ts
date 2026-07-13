@@ -42,7 +42,10 @@ function analyzeRecurring(input: Record<string, unknown>): ToolResult {
   const groups = new Map<string, Txn[]>();
   for (const t of rows) (groups.get(t.merchant) ?? groups.set(t.merchant, []).get(t.merchant)!).push(t);
 
-  const price_changes: { merchant: string; old_price: number; new_price: number; delta: number }[] = [];
+  // Every claim is minted with an identity at write time (claim graph, increment A).
+  // Nothing can point at an anonymous claim, and the dependency graph needs claims to be
+  // addressable the moment they exist — not retrofitted later.
+  const price_changes: { claim_id: string; merchant: string; old_price: number; new_price: number; delta: number }[] = [];
   const recurring_merchants: string[] = [];
   for (const [merchant, list] of groups) {
     const months = new Set(list.map((t) => t.date.slice(0, 7)));
@@ -52,7 +55,13 @@ function analyzeRecurring(input: Record<string, unknown>): ToolResult {
     const oldP = sorted[0].amount;
     const newP = sorted[sorted.length - 1].amount;
     if (newP > oldP) {
-      price_changes.push({ merchant, old_price: oldP, new_price: newP, delta: Math.round((newP - oldP) * 100) / 100 });
+      price_changes.push({
+        claim_id: crypto.randomUUID(),
+        merchant,
+        old_price: oldP,
+        new_price: newP,
+        delta: Math.round((newP - oldP) * 100) / 100,
+      });
     }
   }
   const total_monthly_impact = Math.round(price_changes.reduce((s, c) => s + c.delta, 0) * 100) / 100;
@@ -68,7 +77,7 @@ function analyzeRecurring(input: Record<string, unknown>): ToolResult {
 // verify — re-test each claimed change against the raw rows; catch usage-based false positives.
 function verifyFindings(input: Record<string, unknown>): ToolResult {
   const claims = (Array.isArray(input.claims) ? input.claims : []) as {
-    merchant: string; old_price: number; new_price: number;
+    claim_id?: string; merchant: string; old_price: number; new_price: number;
   }[];
   const results = claims.map((claim) => {
     const rows = forMerchant(claim.merchant);
@@ -83,6 +92,10 @@ function verifyFindings(input: Record<string, unknown>): ToolResult {
       amounts[amounts.length - 1] === claim.new_price &&
       amounts.every((a) => a === claim.old_price || a === claim.new_price);
     return {
+      // The verdict carries the id of the claim it judged, so an edge can reference a
+      // VERIFIED claim, not just a merchant name. Null when the caller omitted it —
+      // recorded visibly rather than silently invented, like "no confidence stated".
+      claim_id: claim.claim_id ?? null,
       merchant: claim.merchant,
       claim: { old_price: claim.old_price, new_price: claim.new_price },
       pass: cleanStep,

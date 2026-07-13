@@ -71,6 +71,11 @@ export const tools: Anthropic.Tool[] = [
           items: {
             type: "object",
             properties: {
+              claim_id: {
+                type: "string",
+                description:
+                  "The claim_id from analyze_recurring's output for this claim, echoed verbatim. Always include it when present — it links the verification verdict to the exact claim it judged.",
+              },
               merchant: { type: "string" },
               old_price: { type: "number" },
               new_price: { type: "number" },
