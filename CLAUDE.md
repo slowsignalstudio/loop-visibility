@@ -62,7 +62,19 @@ Dev server: `npm run dev` → http://localhost:3000.
   `design/claim-graph-increment.md`): `analyze_recurring` mints a `claim_id` per price
   change (carried through verify), and `readClaims()` is the ONLY legal way to consume
   another run's verified claims — it writes one `claim_edges` row per claim before
-  returning, throws on failure. Claims without ids cannot cross a loop boundary.
+  returning, throws on failure. Claims without ids cannot cross a loop boundary. The
+  boundary guardrail lives inside `readClaims()`: undischarged doubt crossing into a
+  higher-stakes consumer is withheld (edge written with `tripped = true`) until a
+  supervisor approval of the producer run releases it; `applyEdges()` in `lib/fleet.ts`
+  surfaces tripped guardrails at the top of the needs-you queue.
+- `lib/stakes.ts` — stakes tiers (`observes` / `recommends` / `acts`). Every run opens
+  with a `plan` hop declaring its stakes; the tool manifest imposes a floor the run
+  cannot declare its way below, and unknown tools floor at `acts`.
+- `lib/drafter.ts` + `app/api/draft/route.ts` — the cancellation-drafter loop, the claim
+  graph's first consumer: `read_claims` (gather, via `readClaims()`) →
+  `decide_cancellations` (act, greedy under a monthly limit) →
+  `verify_cancellation_plan` (verify, invariant checks incl. redundancy), then the model
+  drafts the email. Declared stakes `recommends`.
 - `lib/supabaseClient.ts` — two clients:
   - `createBrowserClient()` — anon key, **read** side (viewer/queries).
   - `createServiceClient()` — service-role key, **server-only writes**. Never import into a
