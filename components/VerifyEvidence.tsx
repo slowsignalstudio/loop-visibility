@@ -1,8 +1,9 @@
 import type { Txn } from "@/lib/toolRunners";
 
-// The designed evidence-beside-verdict view for a verify hop. Instead of raw JSON, each
-// claim is a card that shows the verdict (confirmed / reversed) next to the raw monthly
-// charges it was checked against — so the data can visibly contradict its own label.
+// The designed evidence-beside-verdict view for a verify hop. Each claim is a card that puts
+// the verdict (confirmed / reversed) next to the raw monthly charges it was checked against,
+// so the data can visibly contradict its own label. The charge that fits no clean step gets
+// flagged, which is why the AWS reversal reads at a glance.
 
 type ClaimResult = {
   merchant: string;
@@ -18,7 +19,6 @@ function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null;
 }
 
-// Narrow the jsonb into the shape we expect before rendering.
 export function asVerifyOutput(v: unknown): VerifyOutput | null {
   if (!isRecord(v) || !Array.isArray(v.results)) return null;
   return v as VerifyOutput;
@@ -32,35 +32,35 @@ export default function VerifyEvidence({ output }: { output: unknown }) {
   if (!data) return null;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2.5">
       {data.results.map((r) => {
         const { old_price, new_price } = r.claim;
         return (
           <div
             key={r.merchant}
-            className={`rounded-lg border p-3 ${
-              r.pass ? "border-emerald-300 bg-emerald-50/60" : "border-rose-300 bg-rose-50/60"
+            className={`rounded-xl border p-3.5 ${
+              r.pass ? "border-emerald-200 bg-emerald-50/40" : "border-rose-200 bg-rose-50/40"
             }`}
           >
-            <div className="mb-2 flex items-center justify-between gap-3">
-              <div className="text-sm font-semibold text-neutral-800">{r.merchant}</div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-xs text-neutral-500">
-                  claimed {money(old_price)} → {money(new_price)}
-                </span>
-                <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                    r.pass ? "bg-emerald-600 text-white" : "bg-rose-600 text-white"
-                  }`}
-                >
-                  {r.pass ? "Confirmed" : "Reversed"}
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div className="flex items-baseline gap-2">
+                <span className="text-sm font-semibold text-stone-800">{r.merchant}</span>
+                <span className="font-mono text-xs text-stone-400">
+                  {money(old_price)} → {money(new_price)}
                 </span>
               </div>
+              <span
+                className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                  r.pass ? "bg-emerald-600 text-white" : "bg-rose-600 text-white"
+                }`}
+              >
+                {r.pass ? "Confirmed" : "Reversed"}
+              </span>
             </div>
 
-            {/* The raw charges, in order. A clean subscription step is every charge either
-                the old or the new price. A charge that is neither breaks the step, and we
-                flag it so the eye lands on why the claim failed. */}
+            <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-stone-400">
+              Charges checked
+            </div>
             <div className="flex flex-wrap gap-1.5">
               {r.supporting_rows.map((row) => {
                 const fits = row.amount === old_price || row.amount === new_price;
@@ -68,20 +68,26 @@ export default function VerifyEvidence({ output }: { output: unknown }) {
                   <span
                     key={row.id}
                     title={row.date}
-                    className={`rounded border px-2 py-1 font-mono text-xs ${
+                    className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 font-mono text-xs ${
                       fits
-                        ? "border-neutral-200 bg-white text-neutral-600"
+                        ? "border-stone-200 bg-white text-stone-500"
                         : "border-rose-400 bg-rose-100 font-semibold text-rose-700"
                     }`}
                   >
-                    <span className="text-neutral-400">{month(row.date)} </span>
+                    <span className="text-stone-400">{month(row.date)}</span>
                     {money(row.amount)}
                   </span>
                 );
               })}
             </div>
 
-            <p className="mt-2 text-xs text-neutral-600">{r.reason}</p>
+            <p
+              className={`mt-3 text-xs leading-relaxed ${
+                r.pass ? "text-emerald-900/70" : "text-rose-900/70"
+              }`}
+            >
+              {r.reason}
+            </p>
           </div>
         );
       })}

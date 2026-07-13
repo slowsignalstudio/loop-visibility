@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Morning review — agent PR triage</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --surface: #ffffff;
+    --surface-2: #f4f2ec;
+    --text: #1a1a19;
+    --text-2: #57564f;
+    --muted: #8a887f;
+    --border: #e6e4dd;
+    --border-strong: #cfccc2;
+    --green: #2f7d32; --green-bg: #eaf3e7;
+    --amber: #9a6a10; --amber-bg: #f8efdd;
+    --red: #b3261e;   --red-bg: #fbeae8;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 40px 24px 64px; }
+  .thesis { font-size: 13px; color: var(--muted); margin: 0 0 24px; }
+  .thesis b { color: var(--text-2); font-weight: 500; }
+  .metric {
+    display: inline-flex; align-items: baseline; gap: 8px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 999px; padding: 5px 14px; font-size: 13px; color: var(--text-2);
+    margin-bottom: 28px;
+  }
+  .metric b { font-size: 15px; color: var(--text); font-weight: 500; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 2px; }
+  .sub { font-size: 13px; color: var(--muted); margin: 0 0 28px; }
+  .section-label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; margin: 0 2px 10px; }
+  .needs { color: var(--red); }
+  .ready { color: var(--green); }
+  .row-head { display: flex; align-items: center; justify-content: space-between; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .card.attn { border-color: var(--red); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .dot.g { background: var(--green); } .dot.r { background: var(--red); }
+  .top { display: flex; align-items: center; gap: 12px; padding: 14px 18px; }
+  .title { font-weight: 500; }
+  .meta { font-size: 13px; color: var(--text-2); }
+  .pill { font-size: 12px; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .pill.g { background: var(--green-bg); color: var(--green); }
+  .pill.a { background: var(--amber-bg); color: var(--amber); }
+  .pill.r { background: var(--red-bg); color: var(--red); }
+  .body { border-top: 1px solid var(--border); padding: 16px 18px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .lab { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .val { font-size: 14px; color: var(--text-2); }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+  .diff { margin-top: 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); overflow: hidden; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+  .diff .h { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--muted); }
+  .diff .l { padding: 2px 12px; }
+  .diff .del { color: var(--red); } .diff .add { color: var(--green); }
+  .actions { display: flex; align-items: center; gap: 8px; padding: 14px 18px; border-top: 1px solid var(--border); }
+  button { font: inherit; font-size: 13px; padding: 8px 15px; border-radius: 7px; cursor: pointer; border: 1px solid transparent; }
+  .primary { background: var(--text); color: #fff; }
+  .ghost { background: var(--surface); color: var(--text); border-color: var(--border-strong); }
+  .plain { background: transparent; color: var(--text-2); border-color: var(--border); }
+  .est { margin-left: auto; font-size: 12px; color: var(--muted); }
+  .list-row { display: flex; align-items: center; gap: 12px; padding: 13px 18px; }
+  .list-row + .list-row { border-top: 1px solid var(--border); }
+  .list-row .t { flex: 1; font-size: 14px; }
+  .list-row.done { opacity: 0.45; }
+  .small { font-size: 12px; color: var(--muted); }
+  .conf { font-size: 12px; color: var(--green); }
+  .stack { display: flex; flex-direction: column; gap: 10px; }
+  .gap { margin-bottom: 26px; }
+  .toast { visibility: hidden; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="thesis">Portfolio concept &mdash; <b>agent PR triage</b>. When agents open more pull requests than a person can read, review becomes the bottleneck. This screen sorts by where human judgment actually changes the outcome, and puts each verdict next to its evidence, so the safe majority clear in one action and attention flows to real risk.</p>
+
+  <div class="metric"><b id="tttd">2.4 min</b> median time to a trusted decision <span class="small">(was 18)</span></div>
+
+  <h1>Morning review</h1>
+  <p class="sub" id="summary">Thursday, 8:41am &middot; 3 agents ran overnight &middot; <span id="counts">6 PRs, 4 ready, 2 need you</span></p>
+
+  <!-- NEEDS YOU -->
+  <div class="section-label needs">Needs your judgment</div>
+  <div class="stack gap">
+
+    <div class="card attn" id="pr415">
+      <div class="top">
+        <span class="dot r"></span>
+        <div style="flex:1; min-width:0;">
+          <div class="title">#415 &nbsp;Refactor auth middleware</div>
+          <div class="meta">agent: codex-nightly &middot; +260 / -180 lines</div>
+        </div>
+        <span class="pill g">128 tests pass</span>
+        <span class="pill a">changes requested</span>
+      </div>
+      <div class="body">
+        <div class="grid2">
+          <div>
+            <div class="lab">What the agent says it did</div>
+            <div class="val">Replaced hand-rolled session parsing with the shared <code>verifyToken()</code> helper across 6 routes.</div>
+          </div>
+          <div>
+            <div class="lab">Reviewer agent flagged</div>
+            <div class="val">Touches token validation but <b style="font-weight:600">no test covers the expiry path</b>. A human should confirm.</div>
+          </div>
+        </div>
+        <div class="diff">
+          <div class="h">middleware/auth.ts &middot; the hunk that carries the risk</div>
+          <div class="l del">- if (Date.now() &lt; session.exp * 1000) return session;</div>
+          <div class="l add">+ return verifyToken(raw); // expiry handled inside helper</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="resolve('pr415','merged')">Approve &amp; merge</button>
+        <button class="ghost" onclick="resolve('pr415','changes')">Request changes</button>
+        <button class="plain">Open full diff</button>
+        <span class="est">est. 2 min to decide</span>
+      </div>
+    </div>
+
+    <div class="card" id="pr416">
+      <div class="top">
+        <span class="dot r"></span>
+        <div style="flex:1; min-width:0;">
+          <div class="title">#416 &nbsp;Migrate to new pricing table</div>
+          <div class="meta">agent: claude-nightly &middot; +190 / -40 lines</div>
+        </div>
+        <span class="pill r">2 tests failing</span>
+        <span class="pill r">blocked</span>
+      </div>
+      <div class="actions">
+        <button class="ghost" onclick="resolve('pr416','back')">Send back to agent</button>
+        <button class="plain">View failing tests</button>
+        <span class="est">blocked on CI</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- READY -->
+  <div class="row-head" style="margin:0 2px 10px;">
+    <div class="section-label ready" style="margin:0;">Ready &middot; tests pass, reviewer approved</div>
+    <button class="ghost" style="padding:5px 12px; font-size:12px;" onclick="mergeAll()">Merge all 4</button>
+  </div>
+  <div class="card" id="readyList">
+    <div class="list-row" data-ready>
+      <span class="dot g"></span><div class="t">#412 &nbsp;Add CSV export to reports</div>
+      <span class="small">+84</span><span class="conf">high confidence</span>
+    </div>
+    <div class="list-row" data-ready>
+      <span class="dot g"></span><div class="t">#413 &nbsp;Cache dashboard query</div>
+      <span class="small">+120</span><span class="conf">high confidence</span>
+    </div>
+    <div class="list-row" data-ready>
+      <span class="dot g"></span><div class="t">#414 &nbsp;Fix timezone in exported reports</div>
+      <span class="small">+47</span><span class="conf">high confidence</span>
+    </div>
+    <div class="list-row" data-ready>
+      <span class="dot g"></span><div class="t">#417 &nbsp;Update copy on settings page</div>
+      <span class="small">+12</span><span class="conf">high confidence</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let ready = 4, needsYou = 2;
+  function refresh() {
+    const total = ready + needsYou;
+    document.getElementById('counts').textContent =
+      total + (total === 1 ? ' PR' : ' PRs') + ', ' + ready + ' ready, ' + needsYou + ' need you';
+  }
+  function mergeAll() {
+    document.querySelectorAll('#readyList [data-ready]').forEach(function (row) {
+      if (row.classList.contains('done')) return;
+      row.classList.add('done');
+      const conf = row.querySelector('.conf');
+      if (conf) { conf.textContent = 'merged'; conf.style.color = 'var(--muted)'; }
+    });
+    ready = 0;
+    refresh();
+  }
+  function resolve(id, kind) {
+    const card = document.getElementById(id);
+    if (!card || card.dataset.done) return;
+    card.dataset.done = '1';
+    card.style.transition = 'opacity .25s ease';
+    card.style.opacity = '0.45';
+    const label = kind === 'merged' ? 'merged'
+      : kind === 'changes' ? 'changes requested'
+      : 'sent back to agent';
+    const actions = card.querySelector('.actions');
+    if (actions) actions.innerHTML = '<span class="small">' + label + '</span>';
+    needsYou = Math.max(0, needsYou - 1);
+    refresh();
+  }
+  refresh();
+</script>
+</body>
+</html>

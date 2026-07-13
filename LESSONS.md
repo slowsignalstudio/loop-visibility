@@ -105,3 +105,48 @@ disappears at the end.
 Two design refinements deliberately deferred (functional, not yet polished): the
 evidence-beside-verdict cards in 3.4 want a clearer visual pass, and the phase indicators
 could use a stronger "you are here" treatment. Noted here so they don't get lost.
+
+## Concepts — things to be able to explain in an interview
+
+### How evals work at scale, and the trap
+
+The AWS trap is a hand-designed adversarial case, but that is only one item in a real eval.
+Most of a serious eval set is a large collection of tasks with known-good answers, graded
+automatically; the hard adversarial cases are seeded in on purpose to probe specific
+failure modes, sitting inside a broad distribution of ordinary cases.
+
+At scale the grading is what changes, because no one can read every output. Four
+mechanisms carry the load: fixed benchmarks with programmatic graders (SWE-bench: a patch
+is right if the repo's tests pass, no judgment needed); a model as the grader
+(LLM-as-judge) scoring against a written rubric, which is the instinct behind using Haiku
+for cheap high-volume checks; rationed human evaluation for what only people can settle,
+like preference comparisons and calibrating whether the auto-graders agree with humans;
+and continuous regression runs on every model change — the nightly routine, scaled to
+thousands of cases.
+
+### Scalable oversight (the open problem)
+
+How do you evaluate a system that can do things you cannot easily verify. The main move is
+to lean on domains where checking is easier than doing: a math proof is hard to produce
+but a checker confirms it; a game outcome is unambiguous. When a verifiable signal exists,
+ground truth comes from the checker, not human judgment, so human capability stops being
+the ceiling. Where no checker exists, researchers try decomposition (verify the pieces),
+debate (two models argue, a weaker judge spots the flaw), and weak-to-strong supervision.
+Constitutional AI (Anthropic) and weak-to-strong generalization (OpenAI) are two angles on
+this. None of it is finished.
+
+### Where this flagship fits
+
+"Evidence beside the verdict" is a legibility mechanism, and legibility is one honest
+answer to scalable oversight: if a human cannot re-derive the agent's conclusion, the next
+best thing is that the agent shows its work in a checkable form, so trust comes from
+inspecting the reasoning rather than trusting the agent's authority. Worth saying in an
+Anthropic conversation, because it maps to what their alignment teams work on.
+
+### The catch with model-graded evals
+
+A grader shares blind spots with the thing it grades; a model cannot reliably catch an
+error it would also make, and two similarly-trained models can be confidently wrong in the
+same direction. So model-graded evals drift without an anchor, and the anchor is verifiable
+checkers plus periodic human spot-checks. Models do the volume; humans and mechanical
+checkers hold the ground truth.

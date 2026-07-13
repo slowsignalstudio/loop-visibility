@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
+/* Day 3 craft pass: one controlled warm light theme so the design reads the same in every
+   demo and screenshot. Dark mode is a deliberate later addition, not an accident of the OS. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf8f5;
+  --foreground: #1c1917;
 }
 
 @theme inline {
@@ -12,15 +14,8 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
