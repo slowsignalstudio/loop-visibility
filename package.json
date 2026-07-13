@@ -12,7 +12,12 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "eval": "tsx scripts/eval.ts",
+    "eval:report": "EVAL_REPORT=1 tsx scripts/eval.ts",
+    "seed:fleet": "tsx scripts/seed-fleet.ts",
+    "demo:draft": "tsx scripts/demo-script.ts",
+    "digest": "tsx scripts/daily-digest.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
@@ -30,6 +35,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "tailwindcss": "^4",
+    "tsx": "^4.23.0",
     "typescript": "^5",
     "vitest": "^2.1.9"
   }
