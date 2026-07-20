@@ -112,19 +112,39 @@ export async function runAgent({ runId, onHop }: RunAgentOptions = {}): Promise<
       break;
     }
 
-    const toolUses = res.content.filter(
-      (b): b is Anthropic.ToolUseBlock => b.type === "tool_use",
-    );
     const toolResults: Anthropic.ToolResultBlockParam[] = [];
 
-    for (const tu of toolUses) {
-      const input = (tu.input ?? {}) as Record<string, unknown>;
-      const { phase, output, verification } = runTool(tu.name, input);
+    // Walk the assistant's blocks in the order it emitted them. Text the model reasons
+    // out loud between tool calls is a real hop the viewer must be able to show, so it is
+    // traced as a `plan` row (tool_name null, the reasoning stored in tool_output) before
+    // the tool call it precedes — same integrity rule as every other hop.
+    for (const block of res.content) {
+      if (block.type === "text") {
+        const reasoning = block.text.trim();
+        if (!reasoning) continue;
+        const hop: Hop = {
+          step_index: step_index++,
+          phase: "plan",
+          tool_name: null,
+          tool_input: {},
+          tool_output: reasoning,
+          model_confidence: null,
+          verification: null,
+        };
+        hops.push(hop);
+        await onHop?.(hop);
+        continue;
+      }
+
+      if (block.type !== "tool_use") continue;
+
+      const input = (block.input ?? {}) as Record<string, unknown>;
+      const { phase, output, verification } = runTool(block.name, input);
 
       // The model's own hedge, stored verbatim (act phase only). Required field; if the
       // model omits it, record the absence visibly rather than null.
       const model_confidence =
-        tu.name === "analyze_recurring"
+        block.name === "analyze_recurring"
           ? typeof input.confidence === "string" && input.confidence.trim()
             ? input.confidence
             : "no confidence stated"
@@ -133,7 +153,7 @@ export async function runAgent({ runId, onHop }: RunAgentOptions = {}): Promise<
       const hop: Hop = {
         step_index: step_index++,
         phase,
-        tool_name: tu.name,
+        tool_name: block.name,
         tool_input: input,
         tool_output: output,
         model_confidence,
@@ -144,7 +164,7 @@ export async function runAgent({ runId, onHop }: RunAgentOptions = {}): Promise<
 
       toolResults.push({
         type: "tool_result",
-        tool_use_id: tu.id,
+        tool_use_id: block.id,
         content: JSON.stringify(output),
       });
     }

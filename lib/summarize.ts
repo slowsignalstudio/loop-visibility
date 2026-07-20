@@ -32,6 +32,20 @@ export function summarize(row: Trace): StepSummary {
   const tool = row.tool_name ?? "—";
   const out = row.tool_output;
 
+  // Interleaved reasoning: text the model emitted between tool calls, traced as a plan
+  // hop with the reasoning verbatim in tool_output. Show it as the headline so the loop's
+  // out-loud thinking is visible next to the tool hops it justified.
+  if (row.phase === "plan" && typeof out === "string" && out.trim()) {
+    const text = out.trim();
+    return {
+      phase: "plan",
+      tool: "—",
+      headline: text,
+      status: "reasoning",
+      tone: "neutral",
+    };
+  }
+
   // The run-opening stakes declaration (claim graph, increment C). Evidence lives in
   // tool_input: what the run declared, and the manifest the floor was derived from.
   if (row.phase === "plan" && isRecord(row.tool_input)) {
