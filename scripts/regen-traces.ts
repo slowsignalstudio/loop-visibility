@@ -20,10 +20,27 @@ import { createServiceClient } from "@/lib/supabaseClient";
  * Requires ANTHROPIC_API_KEY and the Supabase env (service-role key) in .env.local or the
  * ambient environment — the same credentials the API route uses.
  *
+ * Requires Node 22+: @supabase/supabase-js constructs a realtime WebSocket eagerly and
+ * Node < 22 has no global WebSocket, so createServiceClient() throws on older runtimes.
+ * This is the same Node-22 floor the project pins in package.json ("engines"); the guard
+ * below turns the otherwise-cryptic failure into a clear message.
+ *
  * Usage:  tsx scripts/regen-traces.ts        (3 runs)
  *         tsx scripts/regen-traces.ts 5       (5 runs)
  *         REGEN_RUNS=3 tsx scripts/regen-traces.ts
  */
+
+// Fail fast on Node < 22 rather than crashing deep inside the Supabase client's eager
+// WebSocket construction, which produces a stack trace that hides the real cause.
+const nodeMajor = Number(process.versions.node.split(".")[0]);
+if (nodeMajor < 22) {
+  console.error(
+    `regen-traces requires Node 22+ (found v${process.versions.node}). ` +
+      `@supabase/supabase-js opens a realtime WebSocket eagerly and Node < 22 has no global ` +
+      `WebSocket. Switch to Node 22 (e.g. \`nvm use 22\`) and re-run.`,
+  );
+  process.exit(1);
+}
 
 // Next loads .env.local automatically; a standalone script does not, so load it by hand.
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
